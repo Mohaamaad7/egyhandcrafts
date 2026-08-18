@@ -1,0 +1,6 @@
+# Laragon / IDE Files
+.idea/
+.vscode/
+*.log
+.DS_Store
+Thumbs.db

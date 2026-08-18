@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشروع توثيق الحرف التراثية بمحافظة المنوفية | جامعة مدينة السادات</title>
+    
+    <!-- Meta SEO -->
+    <meta name="description" content="البوابة الرسمية لتوثيق ودراسة الحرف التراثية والصناعات التقليدية بمحافظة المنوفية - كلية السياحة والفنادق، جامعة مدينة السادات.">
+    <meta name="theme-color" content="#1A2F4C">
+
+    <!-- Google Fonts: Amiri & Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- AOS (Animate On Scroll) CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1A2F4C',       // Deep Navy Blue
+                        'primary-dark': '#0E1B2D',
+                        'primary-light': '#264268',
+                        accent: '#E67E22',        // Heritage Amber / Orange
+                        gold: '#D4AF37',          // Heritage Gold
+                        background: '#f4f6f8',    // Soft Off-White
+                    },
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                        serif: ['Amiri', 'serif'],
+                    },
+                    boxShadow: {
+                        'card-soft': '0 10px 25px rgba(0, 0, 0, 0.05)',
+                        'card-hover': '0 20px 35px -5px rgba(26, 47, 76, 0.12), 0 10px 20px -5px rgba(230, 126, 34, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Base styles */
+        body {
+            background-color: #f4f6f8;
+            color: #1A2F4C;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        /* Arabesque geometric subtle watermark pattern */
+        .arabesque-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l7.07 12.93L51.21 8.79l-4.14 14.14L60 30l-12.93 7.07 4.14 14.14-14.14-4.14L30 60l-7.07-12.93-14.14 4.14 4.14-14.14L0 30l12.93-7.07-4.14-14.14 14.14 4.14z' fill='%231A2F4C' fill-opacity='0.02' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        /* Glassmorphic Sticky Navbar */
+        .glass-navbar {
+            background: rgba(26, 47, 76, 0.90);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(230, 126, 34, 0.25);
+        }
+
+        /* Hero Background */
+        .hero-banner {
+            background: linear-gradient(180deg, rgba(14, 27, 45, 0.85) 0%, rgba(26, 47, 76, 0.90) 60%, rgba(14, 27, 45, 0.96) 100%), 
+                        url('https://images.unsplash.com/photo-1572252009286-268acec5ca0a?q=80&w=1600&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Gold Gradient Text */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #FFF6D6 0%, #D4AF37 50%, #E67E22 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Interactive card hover */
+        .interactive-card {
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .interactive-card:hover {
+            transform: translateY(-10px);
+        }
+    </style>
+</head>
+<body class="arabesque-pattern flex flex-col min-h-screen antialiased text-gray-800 selection:bg-accent selection:text-white">
+
+    <!-- ========================================== -->
+    <!-- BEGIN includes/header.php                  -->
+    <!-- ========================================== -->
+    
+    <!-- 1. Top Utility Bar (Language Toggle) -->
+    <div class="bg-primary-dark text-gray-300 py-2 border-b border-primary/40 relative z-50">
+        <div class="container mx-auto px-4 lg:px-8 flex justify-between items-center text-xs md:text-sm">
+            
+            <div class="flex items-center gap-2 text-gray-300">
+                <span class="inline-flex items-center gap-1 bg-primary px-2.5 py-0.5 rounded-full text-gold text-xs border border-gold/20 font-medium">
+                    <i class="fas fa-university text-[11px]"></i> مشروع بحثي وتوثيقي
+                </span>
+                <span class="hidden sm:inline text-gray-400">|</span>
+                <span class="hidden sm:inline">جامعة مدينة السادات - كلية السياحة والفنادق</span>
+            </div>
+
+            <!-- Language Toggle (English / عربي) -->
+            <div>
+                <a href="?lang=en" class="inline-flex items-center gap-2 text-accent hover:text-white font-bold transition-colors duration-300 px-3 py-1 rounded hover:bg-primary">
+                    <i class="fas fa-globe"></i>
+                    <span>English / عربي</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 2. CENTERED HERITAGE FRAME LOGOS SECTION   -->
+    <header class="bg-white py-4 shadow-sm border-b border-gray-100 relative z-40">
+        <div class="container mx-auto px-4 lg:px-8 flex justify-center items-center">
+            
+            <!-- The "Heritage Frame" Container -->
+            <div class="inline-flex flex-wrap md:flex-nowrap items-center justify-center gap-6 md:gap-8 bg-[#faf8f5] border border-[rgba(230,126,34,0.3)] rounded-2xl py-3.5 px-6 md:px-10 shadow-[0_4px_15px_rgba(0,0,0,0.05)]">
+                
+                <!-- Logo 1: Project Logo (Right in RTL) -->
+                <div class="flex items-center gap-3 group">
+                    <img src="assets/images/project_logo.png" 
+                         alt="شعار مشروع توثيق الحرف التراثية بالمنوفية" 
+                         class="max-h-[75px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                         onerror="this.onerror=null; this.src='https://placehold.co/180x75/1A2F4C/FFFFFF?text=Project+Logo';">
+                    <div class="text-right">
+                        <span class="text-[11px] font-bold text-accent block">مشروع التوثيق</span>
+                        <h2 class="text-sm md:text-base font-bold text-primary font-serif leading-tight">توثيق الحرف التراثية</h2>
+                        <span class="text-[10px] md:text-[11px] text-gray-500">بمحافظة المنوفية</span>
+                    </div>
+                </div>
+
+                <!-- Elegant Vertical Divider 1 -->
+                <div class="hidden md:block w-[1px] h-14 bg-gray-300"></div>
+
+                <!-- Logo 2: College Logo (Center in RTL) -->
+                <div class="flex items-center gap-3 group">
+                    <img src="assets/images/colledge_logo.png" 
+                         alt="شعار كلية السياحة والفنادق" 
+                         class="max-h-[75px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                         onerror="this.onerror=null; this.src='https://placehold.co/180x75/1A2F4C/FFFFFF?text=Faculty+Logo';">
+                    <div class="text-right">
+                        <span class="text-[11px] font-bold text-accent block">الجهة المنفذة</span>
+                        <h2 class="text-sm md:text-base font-bold text-primary font-serif leading-tight">كلية السياحة والفنادق</h2>
+                        <span class="text-[10px] md:text-[11px] text-gray-500">جامعة مدينة السادات</span>
+                    </div>
+                </div>
+
+                <!-- Elegant Vertical Divider 2 -->
+                <div class="hidden md:block w-[1px] h-14 bg-gray-300"></div>
+
+                <!-- Logo 3: University Logo (Left in RTL) -->
+                <div class="flex items-center gap-3 group">
+                    <img src="assets/images/university_logo.png" 
+                         alt="شعار جامعة مدينة السادات" 
+                         class="max-h-[75px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                         onerror="this.onerror=null; this.src='https://placehold.co/180x75/1A2F4C/FFFFFF?text=University+Logo';">
+                    <div class="text-right">
+                        <span class="text-[11px] font-bold text-accent block">جمهورية مصر العربية</span>
+                        <h2 class="text-sm md:text-base font-bold text-primary font-serif leading-tight">جامعة مدينة السادات</h2>
+                        <span class="text-[10px] md:text-[11px] text-gray-500">University of Sadat City</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </header>
+
+    <!-- 3. Sticky Glassmorphic Navbar -->
+    <nav class="glass-navbar sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="flex justify-between items-center">
+                
+                <!-- Desktop Nav Links -->
+                <ul class="hidden md:flex items-center gap-2 lg:gap-6 py-3.5 text-white font-bold text-base">
+                    <li>
+                        <a href="template.html" class="px-3 py-2 rounded-lg bg-accent/20 text-accent border border-accent/40 transition-colors duration-300 flex items-center gap-2">
+                            <i class="fas fa-home text-sm"></i>
+                            <span>الرئيسية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#documented-crafts" class="px-3 py-2 rounded-lg text-gray-200 hover:text-accent hover:bg-white/5 transition-colors duration-300 flex items-center gap-2">
+                            <i class="fas fa-scroll text-sm text-accent/80"></i>
+                            <span>الحرف الموثقة</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#crafts-directory" class="px-3 py-2 rounded-lg text-gray-200 hover:text-accent hover:bg-white/5 transition-colors duration-300 flex items-center gap-2">
+                            <i class="fas fa-book-open text-sm text-accent/80"></i>
+                            <span>دليل حرف المنوفية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#interactive-map" class="px-3 py-2 rounded-lg text-gray-200 hover:text-accent hover:bg-white/5 transition-colors duration-300 flex items-center gap-2">
+                            <i class="fas fa-map-marked-alt text-sm text-accent/80"></i>
+                            <span>الخريطة التفاعلية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#artisans-stories" class="px-3 py-2 rounded-lg text-gray-200 hover:text-accent hover:bg-white/5 transition-colors duration-300 flex items-center gap-2">
+                            <i class="fas fa-users text-sm text-accent/80"></i>
+                            <span>قصص الحرفيين</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Mobile Header Title & Toggle Button -->
+                <div class="md:hidden flex items-center justify-between w-full py-3">
+                    <span class="text-accent font-bold font-serif text-lg">بوابة التراث المنوفي</span>
+                    <button id="navToggleBtn" class="text-white hover:text-accent p-2 rounded-lg bg-primary-light/50 border border-white/20 focus:outline-none" aria-label="القائمة">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Mobile Dropdown Menu -->
+            <div id="mobileNavMenu" class="hidden md:hidden pb-4 pt-2 border-t border-white/10">
+                <ul class="flex flex-col gap-2 text-white font-bold text-base">
+                    <li><a href="template.html" class="block px-3 py-2 rounded-lg bg-accent/20 text-accent">الرئيسية</a></li>
+                    <li><a href="#documented-crafts" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">الحرف الموثقة</a></li>
+                    <li><a href="#crafts-directory" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">دليل حرف المنوفية</a></li>
+                    <li><a href="#interactive-map" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">الخريطة التفاعلية</a></li>
+                    <li><a href="#artisans-stories" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">قصص الحرفيين</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- END includes/header.php                    -->
+    <!-- ========================================== -->
+
+
+    <!-- ========================================== -->
+    <!-- BEGIN index.php Content                    -->
+    <!-- ========================================== -->
+
+    <!-- 1. Hero Section (Min Height: 80vh) -->
+    <section class="hero-banner relative min-h-[80vh] flex items-center justify-center text-center overflow-hidden py-16 px-4">
+        
+        <!-- Ambient Glow Elements -->
+        <div class="absolute -top-20 -right-20 w-80 h-80 bg-accent/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/40 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="container mx-auto relative z-10 max-w-4xl">
+            
+            <!-- Cultural Badge -->
+            <div data-aos="fade-down" data-aos-duration="1000" class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary-dark/80 border border-accent/40 backdrop-blur-md text-accent text-sm md:text-base font-semibold mb-6 shadow-lg">
+                <i class="fas fa-feather-alt"></i>
+                <span>أطلس التراث والصناعات التقليدية</span>
+            </div>
+
+            <!-- Main Title Centered (White / Gold) with Smooth Fade-in Animation -->
+            <h1 data-aos="zoom-in" data-aos-duration="1100" class="font-serif text-3xl sm:text-5xl md:text-6xl font-bold text-white leading-tight md:leading-tight mb-6 drop-shadow-2xl">
+                مشروع توثيق الحرف التراثية<br>
+                <span class="text-gradient-gold font-serif mt-3 inline-block">بمحافظة المنوفية</span>
+            </h1>
+
+            <!-- Ornamental Divider -->
+            <div data-aos="fade-up" data-aos-delay="200" class="flex items-center justify-center gap-3 my-6">
+                <div class="h-0.5 w-16 md:w-24 bg-gradient-to-l from-accent to-transparent"></div>
+                <div class="w-2.5 h-2.5 rotate-45 bg-accent"></div>
+                <i class="fas fa-gem text-accent text-xs"></i>
+                <div class="w-2.5 h-2.5 rotate-45 bg-accent"></div>
+                <div class="h-0.5 w-16 md:w-24 bg-gradient-to-r from-accent to-transparent"></div>
+            </div>
+
+            <!-- Subtitle Description -->
+            <p data-aos="fade-up" data-aos-delay="300" class="text-gray-200 text-base sm:text-xl font-light leading-relaxed max-w-2xl mx-auto mb-8">
+                بوابة رقمية وبحثية شاملة لتوثيق وأرشفة كنوز الحرف اليدوية والهوية الثقافية بمحافظة المنوفية، برعاية جامعة مدينة السادات.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div data-aos="fade-up" data-aos-delay="400" class="flex flex-wrap justify-center gap-4">
+                <a href="#crafts-grid" class="inline-flex items-center gap-2.5 bg-accent hover:bg-orange-600 text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <span>استكشف أقسام المشروع</span>
+                    <i class="fas fa-arrow-down text-sm"></i>
+                </a>
+                <a href="#interactive-map" class="inline-flex items-center gap-2.5 bg-primary-dark/80 hover:bg-primary text-white font-semibold text-base px-7 py-3.5 rounded-xl border border-accent/40 hover:border-accent backdrop-blur-md transition-all duration-300 transform hover:-translate-y-1">
+                    <i class="fas fa-map-marked-alt text-accent"></i>
+                    <span>الخريطة التفاعلية</span>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 2. THE CRAFTS GRID (Horizontal Flex 2x2)   -->
+    <!-- ========================================== -->
+    <main id="crafts-grid" class="container mx-auto px-4 lg:px-8 py-16 flex-grow">
+        
+        <!-- Section Heading -->
+        <div class="text-center max-w-2xl mx-auto mb-14" data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl font-serif text-primary font-bold leading-tight">
+                أقسام ومحاور التوثيق
+            </h2>
+            <div class="w-20 h-1 bg-accent mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <!-- 2x2 Grid with Horizontal Flex Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            
+            <!-- ================= CARD 1: Documented Crafts ================= -->
+            <div id="documented-crafts" data-aos="fade-up" data-aos-delay="100" class="interactive-card group bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_10px_25px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_35px_-5px_rgba(26,47,76,0.12)] hover:border-accent/30 cursor-pointer flex flex-col sm:flex-row items-center gap-5 transition-all duration-300 transform hover:-translate-y-2">
+                
+                <!-- Right Side: Fixed Thumbnail Image (130x130) -->
+                <div class="w-[130px] h-[130px] sm:w-[140px] sm:h-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-gray-200/80 bg-gray-100 relative group-hover:border-accent/40 transition-all duration-300">
+                    <img src="assets/images/card_serma.jpg" 
+                         alt="الحرف الموثقة بالمشروع" 
+                         class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1606744837616-56c9a5c6a6eb?q=80&w=600&auto=format&fit=crop';">
+                </div>
+
+                <!-- Left Side: Text Content -->
+                <div class="flex-1 flex flex-col justify-between self-stretch text-right">
+                    <div>
+                        <!-- Title with Small Icon -->
+                        <div class="flex items-center gap-2.5 mb-2">
+                            <span class="w-8 h-8 rounded-full bg-accent/15 text-accent flex items-center justify-center text-sm flex-shrink-0 group-hover:bg-accent group-hover:text-white transition-colors duration-300">
+                                <i class="fas fa-scroll"></i>
+                            </span>
+                            <h3 class="text-xl sm:text-2xl font-bold text-accent font-serif group-hover:text-orange-600 transition-colors">
+                                الحرف الموثقة بالمشروع
+                            </h3>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="text-gray-600 leading-relaxed text-sm sm:text-base font-sans mb-3">
+                            تضم الحرف التي تم توثيقها بشكل كامل (السيرما والصدف). تحتوي كل حرفة على التفاصيل الكاملة بناءً على عناوين الاستمارة البحثية.
+                        </p>
+                    </div>
+
+                    <!-- Read More Link -->
+                    <div class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs sm:text-sm font-bold text-primary group-hover:text-accent transition-colors mt-auto">
+                        <span>استعراض استمارة التوثيق</span>
+                        <i class="fas fa-arrow-left transition-transform duration-300 group-hover:-translate-x-1.5"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= CARD 2: Handcrafts Directory ============= -->
+            <div id="crafts-directory" data-aos="fade-up" data-aos-delay="200" class="interactive-card group bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_10px_25px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_35px_-5px_rgba(26,47,76,0.12)] hover:border-accent/30 cursor-pointer flex flex-col sm:flex-row items-center gap-5 transition-all duration-300 transform hover:-translate-y-2">
+                
+                <!-- Right Side: Fixed Thumbnail Image (130x130) -->
+                <div class="w-[130px] h-[130px] sm:w-[140px] sm:h-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-gray-200/80 bg-gray-100 relative group-hover:border-accent/40 transition-all duration-300">
+                    <img src="assets/images/card_guide.jpg" 
+                     alt="دليل الحرف اليدوية" 
+                     class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=600&auto=format&fit=crop';">
+                </div>
+
+                <!-- Left Side: Text Content -->
+                <div class="flex-1 flex flex-col justify-between self-stretch text-right">
+                    <div>
+                        <!-- Title with Small Icon -->
+                        <div class="flex items-center gap-2.5 mb-2">
+                            <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm flex-shrink-0 group-hover:bg-accent group-hover:text-white transition-colors duration-300">
+                                <i class="fas fa-book-open"></i>
+                            </span>
+                            <h3 class="text-xl sm:text-2xl font-bold text-primary font-serif group-hover:text-accent transition-colors">
+                                دليل الحرف اليدوية بالمنوفية
+                            </h3>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="text-gray-600 leading-relaxed text-sm sm:text-base font-sans mb-3">
+                            قائمة شاملة تضم كافة الحرف التراثية المتواجدة بالمحافظة، مع ذكر نبذة مختصرة عن كل حرفة.
+                        </p>
+                    </div>
+
+                    <!-- Read More Link -->
+                    <div class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs sm:text-sm font-bold text-primary group-hover:text-accent transition-colors mt-auto">
+                        <span>تصفح الدليل الشامل</span>
+                        <i class="fas fa-arrow-left transition-transform duration-300 group-hover:-translate-x-1.5"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= CARD 3: Interactive Map ================= -->
+            <div id="interactive-map" data-aos="fade-up" data-aos-delay="300" class="interactive-card group bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_10px_25px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_35px_-5px_rgba(26,47,76,0.12)] hover:border-accent/30 cursor-pointer flex flex-col sm:flex-row items-center gap-5 transition-all duration-300 transform hover:-translate-y-2">
+                
+                <!-- Right Side: Fixed Thumbnail Image (130x130) -->
+                <div class="w-[130px] h-[130px] sm:w-[140px] sm:h-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-gray-200/80 bg-gray-100 relative group-hover:border-accent/40 transition-all duration-300">
+                    <img src="assets/images/card_map.jpg" 
+                         alt="الخريطة التفاعلية" 
+                         class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=600&auto=format&fit=crop';">
+                </div>
+
+                <!-- Left Side: Text Content -->
+                <div class="flex-1 flex flex-col justify-between self-stretch text-right">
+                    <div>
+                        <!-- Title with Small Icon -->
+                        <div class="flex items-center gap-2.5 mb-2">
+                            <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm flex-shrink-0 group-hover:bg-accent group-hover:text-white transition-colors duration-300">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </span>
+                            <h3 class="text-xl sm:text-2xl font-bold text-primary font-serif group-hover:text-accent transition-colors">
+                                الخريطة التفاعلية
+                            </h3>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="text-gray-600 leading-relaxed text-sm sm:text-base font-sans mb-3">
+                            خريطة تفاعلية توضح التوزيع الجغرافي لانتشار الحرف التراثية وأماكن الورش.
+                        </p>
+                    </div>
+
+                    <!-- Read More Link -->
+                    <div class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs sm:text-sm font-bold text-primary group-hover:text-accent transition-colors mt-auto">
+                        <span>استكشاف الخريطة الجغرافية</span>
+                        <i class="fas fa-arrow-left transition-transform duration-300 group-hover:-translate-x-1.5"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= CARD 4: Craftsmen Stories ================= -->
+            <div id="artisans-stories" data-aos="fade-up" data-aos-delay="400" class="interactive-card group bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_10px_25px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_35px_-5px_rgba(26,47,76,0.12)] hover:border-accent/30 cursor-pointer flex flex-col sm:flex-row items-center gap-5 transition-all duration-300 transform hover:-translate-y-2">
+                
+                <!-- Right Side: Fixed Thumbnail Image (130x130) -->
+                <div class="w-[130px] h-[130px] sm:w-[140px] sm:h-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-gray-200/80 bg-gray-100 relative group-hover:border-accent/40 transition-all duration-300">
+                    <img src="assets/images/card_stories.jpg" 
+                         alt="قصص الحرفيين" 
+                         class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop';">
+                </div>
+
+                <!-- Left Side: Text Content -->
+                <div class="flex-1 flex flex-col justify-between self-stretch text-right">
+                    <div>
+                        <!-- Title with Small Icon -->
+                        <div class="flex items-center gap-2.5 mb-2">
+                            <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm flex-shrink-0 group-hover:bg-accent group-hover:text-white transition-colors duration-300">
+                                <i class="fas fa-users"></i>
+                            </span>
+                            <h3 class="text-xl sm:text-2xl font-bold text-primary font-serif group-hover:text-accent transition-colors">
+                                قصص الحرفيين
+                            </h3>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="text-gray-600 leading-relaxed text-sm sm:text-base font-sans mb-3">
+                            مساحة مخصصة لعرض الحكايات الشخصية وتاريخ رواد الحرف اليدوية.
+                        </p>
+                    </div>
+
+                    <!-- Read More Link -->
+                    <div class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs sm:text-sm font-bold text-primary group-hover:text-accent transition-colors mt-auto">
+                        <span>مشاهدة شهادات وقصص الحرفيين</span>
+                        <i class="fas fa-arrow-left transition-transform duration-300 group-hover:-translate-x-1.5"></i>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- END index.php Content                      -->
+    <!-- ========================================== -->
+
+
+    <!-- ========================================== -->
+    <!-- BEGIN includes/footer.php                  -->
+    <!-- ========================================== -->
+    <footer class="bg-primary border-t-4 border-accent py-8 mt-auto shadow-inner text-white relative z-30">
+        <div class="container mx-auto px-4 lg:px-8 text-center">
+            
+            <!-- Copyright and Year -->
+            <p class="text-gray-300 text-sm mt-3 font-sans">
+                &copy; 2026 جميع الحقوق محفوظة لجامعة مدينة السادات - كلية السياحة والفنادق | مشروع توثيق الحرف التراثية بمحافظة المنوفية
+            </p>
+
+        </div>
+    </footer>
+
+    <!-- AOS (Animate On Scroll) JavaScript Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        // Initialize AOS animations
+        document.addEventListener('DOMContentLoaded', function () {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-out-cubic',
+                once: true,
+                offset: 50,
+            });
+
+            // Mobile Navigation Toggle
+            const navToggleBtn = document.getElementById('navToggleBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+
+            if (navToggleBtn && mobileNavMenu) {
+                navToggleBtn.addEventListener('click', function () {
+                    mobileNavMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
