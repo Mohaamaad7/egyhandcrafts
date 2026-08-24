@@ -84,7 +84,7 @@
             <!-- Right Side: Fixed Thumbnail Image (130x130) -->
             <div
                 class="w-[130px] h-[130px] sm:w-[140px] sm:h-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-gray-200/80 bg-gray-100 relative group-hover:border-accent/40 transition-all duration-300">
-                <img src="{{ asset('assets/images/card_serma.jpg') }}" alt="الحرف الموثقة بالمشروع"
+                <img src="{{ asset('assets/images/card_serma.png') }}" alt="الحرف الموثقة بالمشروع"
                     class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1606744837616-56c9a5c6a6eb?q=80&w=600&auto=format&fit=crop';">
             </div>

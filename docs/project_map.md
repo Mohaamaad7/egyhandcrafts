@@ -195,6 +195,23 @@
 
 **Status:** Success
 
+---
+
+### Card Images Addition & Sync to Git
+
+**Task/Instruction:** Add and sync updated card thumbnail images (`card_serma.png`, `card_guide.jpg`, `card_stories.jpg`) in `public/assets/images/`, update Blade/template references, and push changes to Git.
+
+**Action Taken:**
+- Added card images into `public/assets/images/`:
+  - `card_serma.png`
+  - `card_guide.jpg`
+  - `card_stories.jpg`
+- Updated [resources/views/home.blade.php](file:///c:/laragon/www/sadat/resources/views/home.blade.php), [index.php](file:///c:/laragon/www/sadat/index.php), and [template.html](file:///c:/laragon/www/sadat/template.html) to link to `card_serma.png`.
+- Staged, committed, and pushed all updated images and view files to GitHub repository `origin/main`.
+
+**Status:** Success
+
+
 
 
 
