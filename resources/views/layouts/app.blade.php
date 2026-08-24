@@ -1,16 +1,10 @@
-<?php
-/**
- * Header Template - مشروع توثيق الحرف التراثية بمحافظة المنوفية
- * كلية السياحة والفنادق - جامعة مدينة السادات
- */
-?>
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" class="scroll-smooth">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشروع توثيق الحرف التراثية بمحافظة المنوفية | جامعة مدينة السادات</title>
-    
+    <title>@yield('title', 'مشروع توثيق الحرف التراثية بمحافظة المنوفية | جامعة مدينة السادات')</title>
+
     <!-- Meta SEO -->
     <meta name="description" content="البوابة الرسمية لتوثيق ودراسة الحرف التراثية والصناعات التقليدية بمحافظة المنوفية - كلية السياحة والفنادق، جامعة مدينة السادات.">
     <meta name="theme-color" content="#1A2F4C">
@@ -19,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-    
+
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -28,7 +22,7 @@
 
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script>
         tailwind.config = {
             theme: {
@@ -53,7 +47,7 @@
             }
         }
     </script>
-    
+
     <style>
         /* Base styles */
         body {
@@ -78,7 +72,7 @@
         /* Hero Background */
         .hero-banner {
             background: linear-gradient(180deg, rgba(14, 27, 45, 0.85) 0%, rgba(26, 47, 76, 0.90) 60%, rgba(14, 27, 45, 0.96) 100%),
-                        url('assets/images/HeroBG.jpg');
+                        url('{{ asset('assets/images/HeroBG.jpg') }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -107,7 +101,7 @@
     <!-- ========================================== -->
     <div class="bg-primary-dark text-gray-300 py-2 border-b border-primary/40 relative z-50">
         <div class="container mx-auto px-4 lg:px-8 flex justify-between items-center text-xs md:text-sm">
-            
+
             <div class="flex items-center gap-2 text-gray-300">
                 <span class="inline-flex items-center gap-1 bg-primary px-2.5 py-0.5 rounded-full text-gold text-xs border border-gold/20 font-medium">
                     <i class="fas fa-university text-[11px]"></i> مشروع بحثي وتوثيقي
@@ -132,16 +126,15 @@
     <!-- ========================================== -->
     <header class="bg-white py-4 shadow-sm border-b border-gray-100 relative z-40">
         <div class="container mx-auto px-4 lg:px-8 flex justify-center items-center">
-            
+
             <!-- The "Heritage Frame" Container -->
             <div class="inline-flex flex-wrap md:flex-nowrap items-center justify-center gap-6 md:gap-8 bg-[#faf8f5] border border-[rgba(230,126,34,0.3)] rounded-2xl py-3.5 px-6 md:px-10 shadow-[0_4px_15px_rgba(0,0,0,0.05)]">
 
                 <!-- Logo 1: Project Logo (Right in RTL) -->
                 <div class="flex items-center gap-3 group">
-                    <img src="public/assets/images/project_logo.png" 
-                         alt="شعار مشروع توثيق الحرف التراثية بالمنوفية" 
-                         class="h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                         onerror="this.src='assets/images/project_logo.png'">
+                    <img src="{{ asset('assets/images/project_logo.png') }}"
+                         alt="شعار مشروع توثيق الحرف التراثية بالمنوفية"
+                         class="h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
                     <div class="text-right">
                         <span class="text-[11px] font-bold text-accent block">مشروع التوثيق</span>
                         <h2 class="text-sm md:text-base font-bold text-primary font-serif leading-tight">توثيق الحرف التراثية</h2>
@@ -154,10 +147,9 @@
 
                 <!-- Logo 2: College Logo (Center in RTL) -->
                 <div class="flex items-center gap-3 group">
-                    <img src="public/assets/images/colledge_logo.png" 
-                         alt="شعار كلية السياحة والفنادق" 
-                         class="h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                         onerror="this.src='assets/images/colledge_logo.png'">
+                    <img src="{{ asset('assets/images/colledge_logo.png') }}"
+                         alt="شعار كلية السياحة والفنادق"
+                         class="h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
                     <div class="text-right">
                         <span class="text-[11px] font-bold text-accent block">الجهة المنفذة</span>
                         <h2 class="text-sm md:text-base font-bold text-primary font-serif leading-tight">كلية السياحة والفنادق</h2>
@@ -170,10 +162,9 @@
 
                 <!-- Logo 3: University Logo (Left in RTL) -->
                 <div class="flex items-center gap-3 group">
-                    <img src="public/assets/images/university_logo.png" 
-                         alt="شعار جامعة مدينة السادات" 
-                         class="h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                         onerror="this.src='assets/images/university_logo.png'">
+                    <img src="{{ asset('assets/images/university_logo.png') }}"
+                         alt="شعار جامعة مدينة السادات"
+                         class="h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
                     <div class="text-right">
                         <span class="text-[11px] font-bold text-accent block">جمهورية مصر العربية</span>
                         <h2 class="text-sm md:text-base font-bold text-primary font-serif leading-tight">جامعة مدينة السادات</h2>
@@ -185,18 +176,17 @@
 
         </div>
     </header>
-
     <!-- ========================================== -->
-    <!-- 3. STICKY GLASSMORRHIC NAVBAR              -->
+    <!-- 3. STICKY GLASSMORPHIC NAVBAR              -->
     <!-- ========================================== -->
     <nav class="glass-navbar sticky top-0 z-50 shadow-md">
         <div class="container mx-auto px-4 lg:px-8">
             <div class="flex justify-between items-center">
-                
+
                 <!-- Desktop Nav Links -->
                 <ul class="hidden md:flex items-center gap-2 lg:gap-6 py-3.5 text-white font-bold text-base">
                     <li>
-                        <a href="index.php" class="px-3 py-2 rounded-lg bg-accent/20 text-accent border border-accent/40 transition-colors duration-300 flex items-center gap-2">
+                        <a href="{{ route('home') }}" class="px-3 py-2 rounded-lg bg-accent/20 text-accent border border-accent/40 transition-colors duration-300 flex items-center gap-2">
                             <i class="fas fa-home text-sm"></i>
                             <span>الرئيسية</span>
                         </a>
@@ -240,7 +230,7 @@
             <!-- Mobile Dropdown Menu -->
             <div id="mobileNavMenu" class="hidden md:hidden pb-4 pt-2 border-t border-white/10">
                 <ul class="flex flex-col gap-2 text-white font-bold text-base">
-                    <li><a href="index.php" class="block px-3 py-2 rounded-lg bg-accent/20 text-accent">الرئيسية</a></li>
+                    <li><a href="{{ route('home') }}" class="block px-3 py-2 rounded-lg bg-accent/20 text-accent">الرئيسية</a></li>
                     <li><a href="#documented-crafts" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">الحرف الموثقة</a></li>
                     <li><a href="#crafts-directory" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">دليل حرف المنوفية</a></li>
                     <li><a href="#interactive-map" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">الخريطة التفاعلية</a></li>
@@ -250,3 +240,51 @@
 
         </div>
     </nav>
+
+    {{-- ========================================== --}}
+    {{-- Page Content                              --}}
+    {{-- ========================================== --}}
+    @yield('content')
+
+    <!-- ========================================== -->
+    <!-- FOOTER SECTION                             -->
+    <!-- ========================================== -->
+    <footer class="bg-primary border-t-4 border-accent py-8 mt-auto shadow-inner text-white relative z-30">
+        <div class="container mx-auto px-4 lg:px-8 text-center">
+
+            <!-- Copyright and Year -->
+            <p class="text-gray-300 text-sm mt-3 font-sans">
+                &copy; {{ date('Y') }} جميع الحقوق محفوظة لجامعة مدينة السادات - كلية السياحة والفنادق | مشروع توثيق
+                الحرف التراثية بمحافظة المنوفية
+            </p>
+
+        </div>
+    </footer>
+
+    <!-- AOS (Animate On Scroll) JavaScript Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        // Initialize AOS animations
+        document.addEventListener('DOMContentLoaded', function () {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-out-cubic',
+                once: true,
+                offset: 50,
+            });
+
+            // Mobile Navigation Toggle
+            const navToggleBtn = document.getElementById('navToggleBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+
+            if (navToggleBtn && mobileNavMenu) {
+                navToggleBtn.addEventListener('click', function () {
+                    mobileNavMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
+

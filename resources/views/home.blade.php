@@ -1,17 +1,13 @@
-<?php
-/**
- * الصفحة الرئيسية - مشروع توثيق الحرف التراثية بمحافظة المنوفية
- * كلية السياحة والفنادق - جامعة مدينة السادات
- */
-include 'includes/header.php';
-?>
+@extends('layouts.app')
 
+@section('title', 'مشروع توثيق الحرف التراثية بمحافظة المنوفية | جامعة مدينة السادات')
+
+@section('content')
 <!-- ========================================== -->
 <!-- 1. HERO SECTION (Min Height: 80vh)         -->
 <!-- ========================================== -->
-<section
-    class="hero-banner relative min-h-[80vh] flex items-center justify-center text-center overflow-hidden py-16 px-4"
-    style="background: linear-gradient(180deg, rgba(14, 27, 45, 0.85) 0%, rgba(26, 47, 76, 0.90) 60%, rgba(14, 27, 45, 0.96) 100%), url('public/assets/images/HeroBG.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<section class="hero-banner relative min-h-[80vh] flex items-center justify-center text-center overflow-hidden py-16 px-4"
+    style="background: linear-gradient(180deg, rgba(14, 27, 45, 0.85) 0%, rgba(26, 47, 76, 0.90) 60%, rgba(14, 27, 45, 0.96) 100%), url('{{ asset('assets/images/HeroBG.jpg') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
 
     <!-- Ambient Glow / Blur Elements -->
     <div class="absolute -top-20 -right-20 w-80 h-80 bg-accent/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -65,7 +61,6 @@ include 'includes/header.php';
 
     </div>
 </section>
-
 <!-- ========================================== -->
 <!-- 2. THE CRAFTS GRID (Horizontal Flex 2x2)   -->
 <!-- ========================================== -->
@@ -89,7 +84,7 @@ include 'includes/header.php';
             <!-- Right Side: Fixed Thumbnail Image (130x130) -->
             <div
                 class="w-[130px] h-[130px] sm:w-[140px] sm:h-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-gray-200/80 bg-gray-100 relative group-hover:border-accent/40 transition-all duration-300">
-                <img src="assets/images/card_serma.jpg" alt="الحرف الموثقة بالمشروع"
+                <img src="{{ asset('assets/images/card_serma.jpg') }}" alt="الحرف الموثقة بالمشروع"
                     class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1606744837616-56c9a5c6a6eb?q=80&w=600&auto=format&fit=crop';">
             </div>
@@ -125,7 +120,6 @@ include 'includes/header.php';
             </div>
 
         </div>
-
         <!-- ================= CARD 2: Handcrafts Directory ============= -->
         <div id="crafts-directory" data-aos="fade-up" data-aos-delay="200"
             class="interactive-card group bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_10px_25px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_35px_-5px_rgba(26,47,76,0.12)] hover:border-accent/30 cursor-pointer flex flex-col sm:flex-row items-center gap-5 transition-all duration-300 transform hover:-translate-y-2">
@@ -133,7 +127,7 @@ include 'includes/header.php';
             <!-- Right Side: Fixed Thumbnail Image (130x130) -->
             <div
                 class="w-[130px] h-[130px] sm:w-[140px] sm:h-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-gray-200/80 bg-gray-100 relative group-hover:border-accent/40 transition-all duration-300">
-                <img src="assets/images/card_guide.jpg" alt="دليل الحرف اليدوية"
+                <img src="{{ asset('assets/images/card_guide.jpg') }}" alt="دليل الحرف اليدوية"
                     class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=600&auto=format&fit=crop';">
             </div>
@@ -168,7 +162,6 @@ include 'includes/header.php';
             </div>
 
         </div>
-
         <!-- ================= CARD 3: Interactive Map ================= -->
         <div id="interactive-map" data-aos="fade-up" data-aos-delay="300"
             class="interactive-card group bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_10px_25px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_35px_-5px_rgba(26,47,76,0.12)] hover:border-accent/30 cursor-pointer flex flex-col sm:flex-row items-center gap-5 transition-all duration-300 transform hover:-translate-y-2">
@@ -176,7 +169,7 @@ include 'includes/header.php';
             <!-- Right Side: Fixed Thumbnail Image (130x130) -->
             <div
                 class="w-[130px] h-[130px] sm:w-[140px] sm:h-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-gray-200/80 bg-gray-100 relative group-hover:border-accent/40 transition-all duration-300">
-                <img src="assets/images/card_map.jpg" alt="الخريطة التفاعلية"
+                <img src="{{ asset('assets/images/card_map.jpg') }}" alt="الخريطة التفاعلية"
                     class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=600&auto=format&fit=crop';">
             </div>
@@ -211,7 +204,6 @@ include 'includes/header.php';
             </div>
 
         </div>
-
         <!-- ================= CARD 4: Craftsmen Stories ================= -->
         <div id="artisans-stories" data-aos="fade-up" data-aos-delay="400"
             class="interactive-card group bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_10px_25px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_35px_-5px_rgba(26,47,76,0.12)] hover:border-accent/30 cursor-pointer flex flex-col sm:flex-row items-center gap-5 transition-all duration-300 transform hover:-translate-y-2">
@@ -219,7 +211,7 @@ include 'includes/header.php';
             <!-- Right Side: Fixed Thumbnail Image (130x130) -->
             <div
                 class="w-[130px] h-[130px] sm:w-[140px] sm:h-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-gray-200/80 bg-gray-100 relative group-hover:border-accent/40 transition-all duration-300">
-                <img src="assets/images/card_stories.jpg" alt="قصص الحرفيين"
+                <img src="{{ asset('assets/images/card_stories.jpg') }}" alt="قصص الحرفيين"
                     class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop';">
             </div>
@@ -258,7 +250,8 @@ include 'includes/header.php';
     </div>
 
 </main>
+@endsection
 
-<?php
-include 'includes/footer.php';
-?>
+
+
+
