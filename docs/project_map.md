@@ -180,6 +180,22 @@
 
 **Status:** Success
 
+---
+
+### DirectAdmin Customized Deployment Guide & Root .htaccess
+
+**Task/Instruction:** Tailor the production deployment guide specifically for the server environment (`server07` / DirectAdmin / `egyhandcrafts.com` / `public_html`), ensuring root deployment without nested folders, and add root `.htaccess` for automatic routing and protection.
+
+**Action Taken:**
+- Added root [`.htaccess`](file:///c:/laragon/www/sadat/.htaccess) to automatically route all web requests into `public/` and block unauthorized access to sensitive files (`.env`, `.git`, `composer.*`, `artisan`).
+- Completely tailored [docs/DEPLOYMENT_GUIDE.md](file:///c:/laragon/www/sadat/docs/DEPLOYMENT_GUIDE.md) to provide two clear paths for `/home/amal/domains/egyhandcrafts.com/`:
+  1. Direct deployment inside `public_html` using `git clone ... .` (with root `.htaccess` routing).
+  2. Professional symlink deployment (`ln -s core/public public_html`) for DirectAdmin isolation.
+- Staged, committed, and pushed updates to GitHub repository `origin/main`.
+
+**Status:** Success
+
+
 
 
 
