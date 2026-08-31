@@ -31,6 +31,7 @@ class CraftsDirectoryTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('دليل الحرف التراثية بالمنوفية');
         $response->assertSee($craft->title);
+        $response->assertSee('HeroBG.jpg');
     }
 
     public function test_craft_show_page_renders_with_rich_content_and_image(): void

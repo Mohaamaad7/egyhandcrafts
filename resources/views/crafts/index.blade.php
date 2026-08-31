@@ -6,22 +6,30 @@
 {{-- ============================== --}}
 {{-- CRAFTS DIRECTORY — HERO BANNER  --}}
 {{-- ============================== --}}
-<section class="bg-primary py-14 md:py-20 relative overflow-hidden">
-    <div class="absolute inset-0 opacity-5">
+<section class="relative py-16 md:py-24 overflow-hidden text-white"
+         style="background: linear-gradient(180deg, rgba(14, 27, 45, 0.88) 0%, rgba(26, 47, 76, 0.92) 60%, rgba(14, 27, 45, 0.98) 100%), url('{{ asset('assets/images/HeroBG.jpg') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+
+    {{-- Ambient Glow Elements --}}
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-accent/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-gold/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    {{-- Arabesque Pattern Watermark --}}
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
         <div class="arabesque-pattern w-full h-full"></div>
     </div>
+
     <div class="container mx-auto px-4 lg:px-8 text-center relative z-10" data-aos="fade-up">
-        <div class="inline-flex items-center gap-2 bg-accent/20 text-accent border border-accent/30 px-4 py-1.5 rounded-full text-sm font-bold mb-5">
+        <div class="inline-flex items-center gap-2 bg-accent/20 text-accent border border-accent/40 backdrop-blur-md px-4 py-1.5 rounded-full text-sm font-bold mb-5 shadow-sm">
             <i class="fas fa-scroll"></i>
             <span>التوثيق الميداني والأكاديمي للحرف التقليدية</span>
         </div>
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-white leading-tight mb-4">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-white leading-tight mb-4 drop-shadow-lg">
             دليل الحرف التراثية بالمنوفية
         </h1>
-        <p class="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+        <p class="text-gray-200 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light">
             استكشف روائع الصناعات اليدوية والتراثية الموثقة علمياً وميدانياً بمحافظة المنوفية — إرث حضاري عميق وأيادٍ مصرية ماهرة تصنع الجمال عبر الأجيال.
         </p>
-        <div class="mt-6 inline-flex items-center gap-2 bg-white/10 text-gold px-4 py-1.5 rounded-full text-sm font-bold border border-gold/30">
+        <div class="mt-6 inline-flex items-center gap-2 bg-white/10 text-gold px-4 py-1.5 rounded-full text-sm font-bold border border-gold/30 backdrop-blur-md shadow-sm">
             <i class="fas fa-certificate"></i>
             <span>{{ $crafts->total() }} حرفة تراثية موثقة</span>
         </div>

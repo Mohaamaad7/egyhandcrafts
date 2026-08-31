@@ -401,4 +401,20 @@
 **Docs:** `docs/tasks/ckeditor-typography-word-support.md`
 
 
+### 2026-08-31 — Crafts Hero Backgrounds (Directory & Detail Views)
+
+**Task/Instruction:** Add a smooth, heritage hero background image to the Crafts Directory page (`crafts.index`) and dynamically apply each craft's cover image as a tailored, high-contrast hero background for each craft detail page (`crafts.show`).
+
+**Action Taken:**
+- Updated `resources/views/crafts/index.blade.php` to render `HeroBG.jpg` with a rich dark navy gradient overlay, ambient glow lights (accent amber & gold), and arabesque pattern watermark.
+- Updated `resources/views/crafts/show.blade.php` to dynamically set the hero background to `$craft->cover_image_url` with multi-stop dark navy & charcoal gradient overlay, backdrop-blur metadata badges, ambient glow elements, and high-contrast typography.
+- Updated `tests/Feature/CraftsDirectoryTest.php` to verify hero background rendering.
+- Executed `php artisan test` (14 passed, 34 assertions).
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/crafts-hero-backgrounds.md`
+
+
+
 

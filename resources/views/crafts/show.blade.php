@@ -6,8 +6,15 @@
 {{-- ============================== --}}
 {{-- CRAFT DETAIL — HERO SECTION     --}}
 {{-- ============================== --}}
-<section class="bg-primary py-12 md:py-16 relative overflow-hidden text-white">
-    <div class="absolute inset-0 opacity-5">
+<section class="relative py-14 md:py-20 overflow-hidden text-white"
+         style="background: linear-gradient(180deg, rgba(14, 27, 45, 0.88) 0%, rgba(26, 47, 76, 0.93) 55%, rgba(14, 27, 45, 0.98) 100%), url('{{ $craft->cover_image_url }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+
+    {{-- Ambient Glow Elements --}}
+    <div class="absolute -top-20 -right-20 w-80 h-80 bg-accent/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-gold/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    {{-- Arabesque Pattern Watermark --}}
+    <div class="absolute inset-0 opacity-10 pointer-events-none">
         <div class="arabesque-pattern w-full h-full"></div>
     </div>
     <div class="container mx-auto px-4 lg:px-8 relative z-10" data-aos="fade-up">
