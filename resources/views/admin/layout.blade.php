@@ -33,9 +33,15 @@
                 <div class="collapse navbar-collapse" id="adminSidebarMenu">
                     <ul class="navbar-nav pt-lg-3">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('admin.dashboard') }}">
                                 <span class="nav-link-icon"><i class="ti ti-home"></i></span>
                                 <span class="nav-link-title">الرئيسية</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.crafts.*') ? 'active' : '' }}" href="{{ route('admin.crafts.index') }}">
+                                <span class="nav-link-icon"><i class="ti ti-tools"></i></span>
+                                <span class="nav-link-title">دليل الحرف</span>
                             </a>
                         </li>
                     </ul>
@@ -46,8 +52,16 @@
         {{-- Page wrapper --}}
         <div class="page-wrapper">
             <header class="navbar navbar-expand-md navbar-light d-print-none">
-                <div class="container-xl">
+                <div class="container-xl d-flex align-items-center">
                     <div class="page-title">@yield('page_title', 'لوحة التحكم')</div>
+                    <div class="ms-auto">
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                <i class="ti ti-logout me-1"></i> تسجيل الخروج
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </header>
 

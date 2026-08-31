@@ -1,0 +1,26 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-DI1RP0mk.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DMsN-rLE.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/ckeditor.js": {
+    "file": "assets/ckeditor-TLNs2LSD.js",
+    "name": "ckeditor",
+    "src": "resources/js/ckeditor.js",
+    "isEntry": true,
+    "css": [
+      "assets/ckeditor-DhaCK5jB.css"
+    ]
+  }
+}

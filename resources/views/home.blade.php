@@ -154,11 +154,11 @@
                 </div>
 
                 <!-- Read More Link -->
-                <div
+                <a href="{{ url('/crafts') }}"
                     class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs sm:text-sm font-bold text-primary group-hover:text-accent transition-colors mt-auto">
                     <span>تصفح الدليل الشامل</span>
                     <i class="fas fa-arrow-left transition-transform duration-300 group-hover:-translate-x-1.5"></i>
-                </div>
+                </a>
             </div>
 
         </div>

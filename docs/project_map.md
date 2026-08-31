@@ -211,11 +211,194 @@
 
 **Status:** Success
 
+---
+
+### Crafts Directory (دليل الحرف) — Full CRUD + CKEditor 5 + Seeder
+
+**Task/Instruction:** Implement complete Craft CRUD system (Admin + Frontend), integrate CKEditor 5 via NPM/Vite, and seed 9 traditional crafts from Menoufiya governorate. All without altering existing home or admin dashboard routes.
+
+**Action Taken:**
+
+| Task / Instruction | Action Taken | Status |
+|---|---|---|
+| Database Migration | `database/migrations/2026_08_31_151337_create_crafts_table.php` — fields: `id`, `title`, `slug` (unique), `short_description`, `content` (longText), `location`, `cover_image` (nullable), `timestamps`. `php artisan migrate --force` executed. | ✅ DONE |
+| Craft Model | `app/Models/Craft.php` — `$fillable` with all 6 writable fields, `HasFactory` trait | ✅ Already present |
+| CKEditor 5 NPM | `ckeditor5: ^48.4.0` was already in `package.json` dependencies. `npm install` confirmed up-to-date. | ✅ DONE |
+| `resources/js/ckeditor.js` [NEW] | Created CKEditor 5 initializer using `ClassicEditor` + all essential plugins from the official `ckeditor5` package. Guards with `document.querySelector('#content')` — only fires when the element exists. Imports `ckeditor5/ckeditor5.css`. | ✅ DONE |
+| `vite.config.js` [MODIFY] | Added `resources/js/ckeditor.js` to the Vite `input` array as a separate entry point. | ✅ DONE |
+| Vite Build | `npm run build` — 898 modules transformed. Outputs: `ckeditor-*.css` (217 kB), `ckeditor-*.js` (936 kB), `app-*.css`, `app-*.js`. Build time: 10.41s. | ✅ DONE |
+| `Admin\CraftController` [NEW] | `app/Http/Controllers/Admin/CraftController.php` — `index`, `create`, `store`, `edit`, `update`, `destroy`. Slug auto-generated via `Str::slug()` with uniqueness loop. Image upload to `storage/app/public/crafts/` with old-image deletion on update. | ✅ Already present |
+| `FrontendCraftController` [MODIFY] | `app/Http/Controllers/FrontendCraftController.php` — added `index()` (paginate 9, → `crafts.index`) and `show(string $slug)` (slug lookup with `firstOrFail()`, → `crafts.show`). | ✅ DONE |
+| `resources/views/admin/crafts/index.blade.php` [NEW] | Tabler table with avatar thumbnails, location badges, created-at dates, and Edit/Delete action buttons. Flash success alert. Empty-state message. Pagination. | ✅ DONE |
+| `resources/views/admin/crafts/create.blade.php` [NEW] | Tabler card form: title, location, short_description (textarea), content (textarea#content → CKEditor target), cover_image (file). `@vite('resources/js/ckeditor.js')` loaded in `@push('scripts')`. Full validation error display. | ✅ DONE |
+| `resources/views/admin/crafts/edit.blade.php` [NEW] | Identical to create, pre-populated with `$craft` data. Shows current cover image thumbnail with replacement warning. `@vite('resources/js/ckeditor.js')` in scripts stack. | ✅ DONE |
+| `resources/views/admin/layout.blade.php` [MODIFY] | Added "دليل الحرف" nav item in sidebar (icon: `ti-tools`) linking to `admin.crafts.index`. Fixed home link to use `route('admin.dashboard')`. Active state highlighting via `request()->routeIs('admin.crafts.*')`. | ✅ DONE |
+| `resources/views/crafts/index.blade.php` [NEW] | Extends `layouts.app`. Heritage-styled hero banner with craft count. 3-column responsive grid of craft cards (cover image, location badge, title, short_description, "اقرأ المزيد" button). AOS animations. Tailwind RTL design system. | ✅ DONE |
+| `resources/views/crafts/show.blade.php` [NEW] | Extends `layouts.app`. Breadcrumb navigation. Hero with title + location badge. Cover image (if present). Short description intro block. Rich content rendered via `{!! $craft->content !!}` (unescaped CKEditor HTML). Back-navigation button. | ✅ DONE |
+| `routes/web.php` [MODIFY] | Added 6 admin craft routes under `prefix('admin/crafts')->name('admin.crafts.')`. Added `GET /crafts` (crafts.index) and `GET /crafts/{slug}` (crafts.show). Existing `home` and `admin.dashboard` routes **unchanged**. | ✅ DONE |
+| `database/seeders/CraftSeeder.php` [MODIFY] | Populated with 9 crafts: ساقية أبو شعرة للسجاد, الكليم والجوبلان, التطعيم بالصدف, التطريز بالسيرما, الخزف والفخار, النجف الإسلامي, البامبو, الجريد, الأرابيسك. Each has realistic Arabic `short_description` and CKEditor-style HTML `content`. Slugs auto-generated via `Str::slug()`. | ✅ DONE |
+| `database/seeders/DatabaseSeeder.php` [MODIFY] | Added `$this->call(CraftSeeder::class)`. | ✅ DONE |
+| `php artisan db:seed --class=CraftSeeder` | 9 rows inserted in 180ms. | ✅ DONE |
+| `php artisan route:list --path=crafts` | 8 routes verified: 6 admin (index, create, store, edit, update, destroy) + 2 frontend (index, show). | ✅ DONE |
+
+**NPM Packages Installed:**
+- `ckeditor5: ^48.4.0` (was already declared in `package.json`, confirmed installed via `npm install`)
+
+**Files Created:**
+- `resources/js/ckeditor.js`
+- `resources/views/admin/crafts/index.blade.php`
+- `resources/views/admin/crafts/create.blade.php`
+- `resources/views/admin/crafts/edit.blade.php`
+- `resources/views/crafts/index.blade.php`
+- `resources/views/crafts/show.blade.php`
+
+**Files Modified:**
+- `vite.config.js` — added ckeditor.js entry
+- `resources/views/admin/layout.blade.php` — added دليل الحرف sidebar link
+- `app/Http/Controllers/FrontendCraftController.php` — implemented index + show
+- `routes/web.php` — added 8 new routes
+- `database/seeders/CraftSeeder.php` — populated with 9 crafts
+- `database/seeders/DatabaseSeeder.php` — calls CraftSeeder
+
+**Verification:**
+- `php artisan migrate` → `create_crafts_table` DONE (422ms)
+- `php artisan db:seed --class=CraftSeeder` → 9 rows DONE (180ms)
+- `npm run build` → 898 modules, ckeditor bundle compiled ✅
+- `php artisan route:list --path=crafts` → 8 routes confirmed ✅
+
+**Status:** ✅ All tasks complete
+
+---
 
 
 
 
+### 2026-08-31 — Admin Authentication (Fortify) & CKEditor 5 Fix
 
+**Task/Instruction:** (1) Secure the `/admin` area with production-appropriate authentication (login, logout, session auth, protected admin routes, default admin user). (2) Fix CKEditor 5 not initializing on the craft create/edit pages.
+
+**Action Taken:**
+- Installed `laravel/fortify` (headless) and published `config/fortify.php`; disabled registration/reset/2FA/passkeys; set `home => /admin`.
+- Registered Fortify's login view + `login` rate limiter in `app/Providers/AppServiceProvider.php`.
+- Added guest→`/login` and user→`/admin` redirects in `bootstrap/app.php`.
+- Protected `GET /admin` and the `admin/crafts` group with `auth` middleware (route names/URLs unchanged).
+- Created Tabler-styled `resources/views/auth/login.blade.php`; added a logout button to the admin layout header.
+- Added idempotent `database/seeders/AdminUserSeeder.php` (`admin@sadat.test` / `password`) and wired it into `DatabaseSeeder`.
+- Fixed `resources/js/ckeditor.js` `DOMContentLoaded` timing (readyState guard) and rebuilt Vite.
+- Added `tests/Feature/AdminAuthenticationTest.php`.
+
+**Verification:**
+- `php artisan test` → 8 passed (18 assertions).
+- `php artisan route:list -v --path=admin` → `web` + `auth` on all 7 admin routes.
+- `AdminUserSeeder` idempotent (count=1, bcrypt hash, login verified).
+- `npm run build` → success (new `ckeditor-eWfH0KMp.js` bundle).
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/authentication-architecture.md`, `docs/tasks/authentication.md`, `docs/tasks/ckeditor-fix.md`
+
+
+### 2026-08-31 — CKEditor 5 GPL License Key Patch
+
+**Task/Instruction:** Fix `CKEditorError: license-key-missing` on CKEditor 5 (^48.4.0) initialization.
+
+**Action Taken:** Added `licenseKey: 'GPL'` to the `ClassicEditor.create()` configuration object in `resources/js/ckeditor.js` (no plugins/toolbar settings changed). Rebuilt Vite assets with `npm run build` → new `ckeditor-BA3vZnO3.js` bundle.
+
+**Status:** ✅ Success
+
+
+### 2026-08-31 — Frontend Links Connected to Crafts Directory
+
+**Task/Instruction:** Connect the frontend UI to the new Crafts Directory (`/crafts`).
+
+**Action Taken:** Updated the "دليل حرف المنوفية" navigation links in `resources/views/layouts/app.blade.php` (desktop + mobile) and the "دليل الحرف اليدوية بالمنوفية" card read-more link ("تصفح الدليل الشامل") in `resources/views/home.blade.php` to `href="{{ url('/crafts') }}"`. No CSS classes, layout, or text content changed. Verified rendering (`/crafts` present in both views) and homepage feature test passes.
+
+**Status:** ✅ Success
+
+
+### 2026-08-31 — Fix Rich Text Rendering (CKEditor & Tailwind Typography)
+
+**Task/Instruction:** Diagnose and fix the issue where HTML generated by CKEditor 5 loses its formatting (headings, lists, bold text, blockquotes) in the frontend.
+
+**Action Taken:**
+- Diagnosed root cause: Tailwind CSS Preflight resets browser default styles for `h1-h6`, `ul/ol`, and `p`. `@tailwindcss/typography` was not installed and not imported in CSS.
+- Installed `@tailwindcss/typography` via `npm install -D @tailwindcss/typography`.
+- Updated `resources/css/app.css` with `@plugin "@tailwindcss/typography";` and added custom Arabic typography rules for headings (`Amiri`), paragraphs (`Tajawal`), RTL lists, styled blockquotes, and tables.
+- Updated `resources/views/layouts/app.blade.php` with `@vite` assets and typography CDN.
+- Rebuilt frontend assets via `npm run build`.
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/fix-rich-text-rendering.md`
+
+
+### 2026-08-31 — Fix Broken Cover Images & Storage Paths
+
+**Task/Instruction:** Diagnose and fix broken craft cover images in `index.blade.php`, `show.blade.php`, and admin views.
+
+**Action Taken:**
+- Diagnosed root cause: The `public/storage` symlink pointing to `storage/app/public` was missing (causing 404 errors), and seeded crafts lacked cover image paths.
+- Executed `php artisan storage:link` to establish the official storage symlink.
+- Added `getCoverImageUrlAttribute()` accessor to `app/Models/Craft.php` with resilient fallback handling.
+- Populated authentic heritage craft photos in `storage/app/public/crafts/` and updated `database/seeders/CraftSeeder.php` with `cover_image` paths and `updateOrCreate` logic.
+- Ran `php artisan db:seed --class=CraftSeeder`.
+- Updated `resources/views/crafts/index.blade.php`, `resources/views/crafts/show.blade.php`, and admin craft views with `$craft->cover_image_url` and `onerror` fallbacks.
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/fix-image-paths.md`
+
+
+### 2026-08-31 — Craft Show View Redesign & Enhancement
+
+**Task/Instruction:** Redesign `resources/views/crafts/show.blade.php` into a modern, responsive, 2-column heritage showcase.
+
+**Action Taken:**
+- Updated `app/Http/Controllers/FrontendCraftController.php` `show()` method to supply `$relatedCrafts`, `$prevCraft`, and `$nextCraft`.
+- Redesigned `resources/views/crafts/show.blade.php`:
+  - Rich Arabesque Hero banner with breadcrumb navigation and metadata badges.
+  - 8-column main area: Cover image showcase, executive summary quote card, fully styled prose article, interactive social share toolbar (WhatsApp, Facebook, X, Copy Link toast, Print), and smart previous/next craft navigation.
+  - 4-column sidebar: Craft Identity Card ("بطاقة توثيق الحرفة"), related crafts with thumbnails, and university project banner.
+- Updated `resources/views/crafts/index.blade.php` to match visual consistency.
+- Added comprehensive feature tests in `tests/Feature/CraftsDirectoryTest.php`.
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/enhance-craft-show-view.md`
+
+
+### 2026-08-31 — CKEditor 5 Direct Image Upload & Drag-and-Drop
+
+**Task/Instruction:** Implement direct image uploading, drag-and-drop, and resizing inside CKEditor 5 using the official open-source (GPL) packages.
+
+**Action Taken:**
+- Added `uploadImage()` method in `app/Http/Controllers/Admin/CraftController.php` validating images (JPG, PNG, WEBP, GIF up to 5MB) and storing them in `storage/app/public/crafts/content/`.
+- Registered `POST /admin/crafts/upload-image` route with `auth` middleware in `routes/web.php`.
+- Integrated `SimpleUploadAdapter`, `ImageUpload`, `ImageInsert`, `ImageResize`, `AutoImage` in `resources/js/ckeditor.js` configured with CSRF token authentication.
+- Added figure/image CSS alignments and captions in `resources/css/app.css`.
+- Added automated feature tests in `tests/Feature/AdminCraftImageUploadTest.php` (all passing).
+- Rebuilt production assets via `npm run build`.
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/ckeditor-image-upload.md`
+
+
+### 2026-08-31 — CKEditor 5 Word Sanitization & Typography Controls
+
+**Task/Instruction:** Integrate Microsoft Word paste sanitization, font family selection, font size, font color, background highlight, and remove format tool in CKEditor 5 (GPL).
+
+**Action Taken:**
+- Integrated `PasteFromOffice` in `resources/js/ckeditor.js` to automatically sanitize and normalize complex Word HTML upon paste.
+- Added `FontFamily` dropdown with curated Arabic/English fonts (Amiri, Tajawal, Cairo, Traditional Arabic, Arial, Times New Roman).
+- Added `FontSize` dropdown (tiny, small, default, big, huge).
+- Added `FontColor` and `FontBackgroundColor` with heritage palette (navy, amber, gold, green, red, gray) and open Color Picker.
+- Added `RemoveFormat` button to clean unwanted inline styles with a single click.
+- Rebuilt production assets via `npm run build`.
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/ckeditor-typography-word-support.md`
 
 
 

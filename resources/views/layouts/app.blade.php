@@ -20,8 +20,9 @@
     <!-- AOS (Animate On Scroll) CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
 
-    <!-- Tailwind CSS (CDN) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (CDN with Typography) & Vite Assets -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script>
         tailwind.config = {
@@ -198,7 +199,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#crafts-directory" class="px-3 py-2 rounded-lg text-gray-200 hover:text-accent hover:bg-white/5 transition-colors duration-300 flex items-center gap-2">
+                        <a href="{{ url('/crafts') }}" class="px-3 py-2 rounded-lg text-gray-200 hover:text-accent hover:bg-white/5 transition-colors duration-300 flex items-center gap-2">
                             <i class="fas fa-book-open text-sm text-accent/80"></i>
                             <span>دليل حرف المنوفية</span>
                         </a>
@@ -232,7 +233,7 @@
                 <ul class="flex flex-col gap-2 text-white font-bold text-base">
                     <li><a href="{{ route('home') }}" class="block px-3 py-2 rounded-lg bg-accent/20 text-accent">الرئيسية</a></li>
                     <li><a href="#documented-crafts" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">الحرف الموثقة</a></li>
-                    <li><a href="#crafts-directory" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">دليل حرف المنوفية</a></li>
+                    <li><a href="{{ url('/crafts') }}" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">دليل حرف المنوفية</a></li>
                     <li><a href="#interactive-map" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">الخريطة التفاعلية</a></li>
                     <li><a href="#artisans-stories" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">قصص الحرفيين</a></li>
                 </ul>
