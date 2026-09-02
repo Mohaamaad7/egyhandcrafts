@@ -142,7 +142,7 @@
                         <label class="form-label required">المحتوى التفصيلي</label>
                         <textarea name="content" id="content"
                                   class="form-control @error('content') is-invalid @enderror"
-                                  placeholder="اكتب المحتوى الكامل للحرفة هنا..." required>{{ old('content') }}</textarea>
+                                  placeholder="اكتب المحتوى الكامل للحرفة هنا...">{{ old('content') }}</textarea>
                         @error('content')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

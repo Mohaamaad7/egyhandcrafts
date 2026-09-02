@@ -226,9 +226,16 @@
 }
 
 /* Inline Styles Preservation: Highlight Background & Colors */
-.prose span[style*="background-color"] {
+.prose span[style*="background-color"],
+.prose span[style*="background:"] {
     padding: 0.12em 0.35em;
     border-radius: 0.25rem;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
+}
+
+/* Ensure inline colors and fonts inside headings and paragraphs are preserved */
+.prose h1 span, .prose h2 span, .prose h3 span, .prose h4 span,
+.prose p span {
+    font-family: inherit;
 }

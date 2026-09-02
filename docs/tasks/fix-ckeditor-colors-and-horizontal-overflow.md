@@ -27,6 +27,8 @@
    لم تكن إضافات خصائص خلايا الجدول مستوردة في `ckeditor.js`، فغابت أدوات تلوين خلفيات وحدود الخلايا من شريط أدوات الجدول (`tableToolbar`).
 3. **تداخل خلفيات الصفوف الزوجية:**  
    قاعدة `.prose tr:nth-child(even)` كانت تفرض لوناً رمادياً يطغى على الخلايا إذا لم يتم تحصين طبقة الخلية.
+4. **انعدام مزامنة الـ Textarea الخفي في النموذج (السبب الحاسم لاختفاء الألوان):**  
+   يقوم محرر CKEditor 5 بإخفاء عنصر `<textarea name="content" id="content">` الأصلي، ولا يقوم بتحديث قيمته اللحظية أثناء الكتابة وتلوين النصوص. وعند ضغط زر "حفظ التعديلات"، كان النموذج يُرسل القيمة القديمة المحفوظة في الـ Textarea (المجردة من الألوان والتنسيقات)، وبالتالي لم تكن التعديلات الملونة تصل إلى قاعدة البيانات على الإطلاق. بالإضافة إلى ذلك، وجود خاصية `required` الخاصة بـ HTML5 على حقل مخفي كان يُعيق إرسال النموذج في بعض المتصفحات.
 
 ### أسباب المشكلة الثانية:
 1. **ظاهرة التمدد الأدنى في فليكس Bootstrap 5 (Flexbox Min-Width Bug):**  
@@ -54,26 +56,34 @@
 
 ## 4. الحل التقني المنفذ (Implemented Solution)
 
-### 1. في محرر CKEditor 5 (`resources/js/ckeditor.js`):
+### 1. في محرر CKEditor 5 وإرسال النموذج (`resources/js/ckeditor.js` & `views/admin/crafts`):
 - تم استيراد `TableProperties`, `TableCellProperties`, `TableColumnResize`, `TableCaption`.
 - تم تفعيل لوحة خصائص الخلية والجدول في `table.contentToolbar`:
   `['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']`.
 - تم تزويد إعدادات الجدول بباليتة ألوان تراثية منتقاة للخلفيات والحدود (كحلي، عنبري، ذهبي، أصفر دافئ، أحمر ناعم، أخضر ناعم، رمادي، أبيض).
 - تم تفعيل التجميع الذكي لشريط الأدوات: `shouldNotGroupWhenFull: false`.
+- **حل أزمة مزامنة وحفظ البيانات (The Form Data Synchronization Fix):**
+  - ربط حدث `change:data` في CKEditor 5 لتحديث قيمة الـ Textarea المخفية لحظياً فور قيام المشرف بأي تعديل أو تلوين:
+    `editor.model.document.on('change:data', () => { contentEl.value = editor.getData(); });`
+  - إضافة خطاف استباقي (Pre-Submit Hook) على النموذج وعلى أزرار الحفظ لضمان نقل أحدث قيمة HTML بالكامل شاملة وسوم الألوان وتظليل النصوص إلى الـ Textarea قبل الإرسال مباشرة.
+  - إزالة خاصية `required` الخاصة بـ HTML5 من عنصر الـ Textarea المخفي في `create.blade.php` و `edit.blade.php` لمنع تعارض متصفحات الويب مع الحقول المخفية.
 
 ### 2. في CSS الواجهة الأمامية (`resources/css/app.css`):
 - إزالة قواعد `revert !important` وقاعدة `font-family: inherit` السلبية.
-- حماية ألوان وخلفيات الخلايا:
+- حماية ألوان وخلفيات الخلايا الصريحة (`style*="background"` و `style*="background-color"`):
   ```css
+  .prose td[style*="background"],
+  .prose th[style*="background"],
   .prose td[style*="background-color"],
   .prose th[style*="background-color"] {
       position: relative;
       z-index: 1;
   }
   ```
-- حماية تظليل النصوص:
+- حماية تظليل النصوص بالألوان والخلفيات:
   ```css
-  .prose span[style*="background-color"] {
+  .prose span[style*="background-color"],
+  .prose span[style*="background:"] {
       padding: 0.12em 0.35em;
       border-radius: 0.25rem;
       box-decoration-break: clone;
@@ -115,14 +125,16 @@
 
 ## 5. طريقة التحقق من نجاح الحل (Validation & Verification)
 
-- **بناء الأصول (Vite Build):** تجميع الحزم بدون أخطاء (`public/build/assets/ckeditor-spXpogA1.js` بحجم 1.16MB شامل خصائص الجداول بالكامل، و `public/build/assets/app-BrR5jPDA.css`).
-- **الاختبارات الآلية (Automated Tests):** اجتياز جميع الاختبارات الـ 15 بنجاح تام:
-  - `Tests\Feature\CraftsDirectoryTest::test_craft_show_page_renders_styled_colors_and_table_content` ✅
-  - `Tests\Feature\AdminCraftImageUploadTest` ✅
-  - `Tests\Feature\AdminAuthenticationTest` ✅
-- **اختبار التمدد والألوان:** التأكد من ظهور الألوان الصريحة والخلفيات الصفراء وخلايا الجدول في الواجهة الأمامية، وانعدام شريط التمرير الأفقي على مستوى النافذة في لوحة التحكم مع الجداول العريضة والصور المتجاورة.
+- **بناء الأصول (Vite Build):** تجميع الحزم بدون أخطاء (`ckeditor-D_izRn0Q.js` بحجم 1.16MB شامل المزامنة اللحظية بالكامل، و `app-DDVCHMMQ.css`).
+- **اختبار محاكاة المتصفح الفعلي (Automated Browser Test):**
+  تم اختبار محاكاة حقيقية داخل المتصفح لكتابة نص وتلوينه باللون البرتقالي وتظليله باللون الأصفر في CKEditor ثم ضغط زر Submit، وتم التأكد عملياً من استقبال الـ Textarea للوسوم بدقة:
+  `<h2><span style="background-color:#FEF3C7;color:#D4AF37;">مقدمة عن حرفة السيرما</span></h2>`
+  مما يضمن وصول البيانات والتنسيقات إلى قاعدة البيانات وعرضها بالواجهة الأمامية.
+- **الاختبارات الآلية (Automated PHPUnit Tests):** اجتياز جميع الاختبارات الـ 15 بنجاح تام (39 assertions).
+- **اختبار التمدد والألوان:** التأكد من رندرة الألوان الصريحة والخلفيات الصفراء وخلايا الجدول في الواجهة الأمامية، وانعدام شريط التمرير الأفقي على مستوى النافذة في لوحة التحكم مع الجداول العريضة والصور المتجاورة.
 
 ---
 
 ## 6. الحالة النهائية (Final Status)
 **مكتملة بنجاح ✅** — تم القضاء على المشكلتين جذرياً وفق أعلى المعايير الهندسية.
+

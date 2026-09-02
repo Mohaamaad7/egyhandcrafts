@@ -251,6 +251,32 @@ function initEditor() {
             },
             language: 'ar',
         })
+        .then(editor => {
+            // Expose editor instance on the source element and window
+            contentEl.ckeditorInstance = editor;
+            window.ckeditorInstance = editor;
+
+            // 1. Synchronize data in real time as the user edits or formats
+            editor.model.document.on('change:data', () => {
+                contentEl.value = editor.getData();
+            });
+
+            // 2. Pre-submit synchronization hook on the enclosing form
+            const form = contentEl.closest('form');
+            if (form) {
+                form.addEventListener('submit', () => {
+                    contentEl.value = editor.getData();
+                }, true);
+
+                // Direct click hook on submit buttons to guarantee synchronization
+                const submitBtns = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+                submitBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        contentEl.value = editor.getData();
+                    });
+                });
+            }
+        })
         .catch(err => {
             console.error('CKEditor initialization error:', err);
         });

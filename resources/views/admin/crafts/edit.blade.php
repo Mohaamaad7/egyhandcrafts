@@ -142,8 +142,7 @@
                     <div class="col-12">
                         <label class="form-label required">المحتوى التفصيلي</label>
                         <textarea name="content" id="content"
-                                  class="form-control @error('content') is-invalid @enderror"
-                                  required>{{ old('content', $craft->content) }}</textarea>
+                                  class="form-control @error('content') is-invalid @enderror">{{ old('content', $craft->content) }}</textarea>
                         @error('content')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

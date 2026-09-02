@@ -421,17 +421,19 @@
 **Task/Instruction:** (1) Diagnose and fix the issue where text colors, text background highlights (e.g. orange text with yellow background), and table cell background colors set in CKEditor 5 disappear in the frontend preview (`crafts.show`). (2) Diagnose and fix the issue where CKEditor expands abnormally beyond the screen boundaries when inserting wide tables or side-by-side images (such as Quranic verse images), forcing horizontal window scroll.
 
 **Action Taken:**
-- **Problem 1 (Disappearing Colors):**
+- **Problem 1 (Disappearing Colors & Form Data Loss):**
   - Eliminated conflicting CSS rules (`revert !important` and `font-family: inherit`).
   - Integrated `TableCellProperties`, `TableProperties`, `TableColumnResize`, `TableCaption` in `resources/js/ckeditor.js` with tailored heritage palette for cell backgrounds and borders.
-  - Added dedicated styling in `resources/css/app.css` preserving inline styles for `span[style*="background-color"]` (with rounded padding), text colors, and cell background colors (`td[style*="background-color"]`, `th[style*="background-color"]`) ensuring they override alternating row colors.
+  - Resolved root cause of lost colors: CKEditor 5 was not syncing with hidden `<textarea id="content">` on form submission. Implemented real-time two-way sync via `editor.model.document.on('change:data')`, pre-submit hook on form, and direct click listeners on submit buttons. Removed HTML5 `required` attribute from hidden textarea in `create.blade.php` and `edit.blade.php` to prevent submission blockage.
+  - Added dedicated styling in `resources/css/app.css` preserving inline styles for `span[style*="background"]` and `span[style*="background-color"]` (with rounded padding), text colors, and cell background colors (`td[style*="background"]`, `th[style*="background"]`) ensuring they override alternating row colors.
 - **Problem 2 (Horizontal Overflow & Blow-out):**
   - Broke Bootstrap 5 Flexbox minimum content sizing bug by setting `min-width: 0 !important; max-width: 100% !important;` on `.col-12` and `.card-body` in `create.blade.php` and `edit.blade.php`.
   - Added global horizontal overflow protection on `.page-wrapper`, `html`, `body` in `admin/layout.blade.php`.
   - Contained CKEditor within `.ck.ck-editor { width: 100% !important; max-width: 100% !important; min-width: 0 !important; }`, wrapped the toolbar with `flex-wrap: wrap`, and added responsive internal horizontal scrolling `.ck-editor__main { overflow-x: auto; }` so wide tables scroll inside the editor without pushing the page.
   - Constrained images inside CKEditor with `.ck-content figure.image img, .ck-content img { max-width: 100% !important; height: auto !important; }` and `.ck-content figure.image.image-style-side { max-width: 50% !important; }`.
   - Ensured frontend `.prose figure.table` has `overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%;` and `<main>` column has `min-w-0` in `crafts/show.blade.php`.
-  - Rebuilt assets with `npm run build` (CKEditor bundle: 1,160 kB, CSS bundle: 95.67 kB).
+  - Rebuilt assets with `npm run build` (CKEditor bundle: `ckeditor-D_izRn0Q.js` 1,160 kB, CSS bundle: `app-DDVCHMMQ.css` 95.8 kB).
+  - Verified end-to-end via automated browser simulation that editing and submitting instantly populates textarea with colored spans (`style="background-color:#FEF3C7;color:#D4AF37;"`).
   - Added test in `tests/Feature/CraftsDirectoryTest.php` and verified all 15 tests pass.
 
 **Status:** ✅ Success

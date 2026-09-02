@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-BrR5jPDA.css",
+    "file": "assets/app-DDVCHMMQ.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -15,7 +15,7 @@
     "isEntry": true
   },
   "resources/js/ckeditor.js": {
-    "file": "assets/ckeditor-spXpogA1.js",
+    "file": "assets/ckeditor-D_izRn0Q.js",
     "name": "ckeditor",
     "src": "resources/js/ckeditor.js",
     "isEntry": true,
