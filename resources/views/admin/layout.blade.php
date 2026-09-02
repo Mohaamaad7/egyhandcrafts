@@ -16,6 +16,22 @@
     {{-- Tabler Icons --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 
+    <style>
+        /* Prevent layout blowout & horizontal window scroll */
+        html, body {
+            overflow-x: clip;
+            max-width: 100vw;
+        }
+        .page, .page-wrapper {
+            overflow-x: clip;
+            max-width: 100%;
+        }
+        .container-xl, .card, .card-body {
+            min-width: 0;
+            max-width: 100%;
+        }
+    </style>
+
     @stack('styles')
 </head>
 <body>

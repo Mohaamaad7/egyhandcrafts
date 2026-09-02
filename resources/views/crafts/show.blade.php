@@ -71,7 +71,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
             {{-- MAIN COLUMN (8 of 12) --}}
-            <main class="lg:col-span-8 flex flex-col gap-8">
+            <main class="lg:col-span-8 flex flex-col gap-8 min-w-0">
 
                 {{-- Cover Image Showcase --}}
                 <div class="bg-white rounded-3xl overflow-hidden shadow-card-soft border border-gray-100/90 relative group" data-aos="fade-up">
@@ -107,8 +107,8 @@
                 </div>
 
                 {{-- Rich Content Article (CKEditor HTML) --}}
-                <article class="bg-white rounded-3xl p-6 sm:p-8 md:p-12 shadow-card-soft border border-gray-100/80" data-aos="fade-up">
-                    <div class="prose max-w-none text-gray-800 leading-relaxed font-sans">
+                <article class="bg-white rounded-3xl p-6 sm:p-8 md:p-12 shadow-card-soft border border-gray-100/80 min-w-0" data-aos="fade-up">
+                    <div class="prose max-w-none text-gray-800 leading-relaxed font-sans min-w-0 w-full">
                         {!! $craft->content !!}
                     </div>
                 </article>

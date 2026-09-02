@@ -107,11 +107,26 @@
     line-height: 1.8;
 }
 
+/* CKEditor Responsive Tables & Cell Styling */
+.prose figure.table {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1.75em 0;
+}
+
+.prose figure.table table,
 .prose table {
     width: 100%;
     margin-top: 1.5em;
     margin-bottom: 1.5em;
     border-collapse: collapse;
+}
+
+.prose figure.table table {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .prose th {
@@ -129,6 +144,13 @@
 
 .prose tr:nth-child(even) {
     background-color: #f9fafb;
+}
+
+/* Ensure table cells with custom background color override alternating row colors */
+.prose td[style*="background-color"],
+.prose th[style*="background-color"] {
+    position: relative;
+    z-index: 1;
 }
 
 .prose a {
@@ -150,12 +172,13 @@
     max-width: 100%;
 }
 
-.prose figure.image img {
+.prose figure.image img,
+.prose img {
     border-radius: 1rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     display: block;
     margin: 0 auto;
-    max-width: 100%;
+    max-width: 100% !important;
     height: auto;
 }
 
@@ -202,61 +225,10 @@
     text-align: center;
 }
 
-/* ==========================================
-   CKEditor Inline Styles — Override Typography
-   يُجبر المتصفح على احترام الألوان والخطوط
-   التي يُنتجها CKEditor كـ inline styles
-   ========================================== */
-
-/* الألوان المُعرَّفة inline تتغلب على إعادة ضبط typography */
-.prose [style*="color"] {
-    color: revert !important;
-}
-
-.prose [style*="background-color"] {
-    background-color: revert !important;
-}
-
-/* تحديداً لعناصر النص والخلايا */
-.prose span[style*="color"] {
-    color: revert !important;
-}
-
-.prose td[style*="background-color"],
-.prose th[style*="background-color"] {
-    background-color: revert !important;
-}
-
-/* الخطوط المُعرَّفة inline */
-.prose span[style*="font-family"],
-.prose p[style*="font-family"],
-.prose td[style*="font-family"] {
-    font-family: revert !important;
-}
-
-/* أحجام الخطوط المُعرَّفة inline */
-.prose span[style*="font-size"],
-.prose p[style*="font-size"] {
-    font-size: revert !important;
-}
-
-/* ==========================================
-   الجداول في الواجهة الأمامية
-   منع التمدد الأفقي خارج حدود الحاوية
-   ========================================== */
-.prose table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    max-width: 100%;
-}
-
-/* ==========================================
-   الصور المتجاورة في الواجهة الأمامية
-   إجبار الصور على البقاء داخل الحاوية
-   ========================================== */
-.prose figure.image,
-.prose figure.image img {
-    max-width: 100% !important;
-    height: auto;
+/* Inline Styles Preservation: Highlight Background & Colors */
+.prose span[style*="background-color"] {
+    padding: 0.12em 0.35em;
+    border-radius: 0.25rem;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
 }

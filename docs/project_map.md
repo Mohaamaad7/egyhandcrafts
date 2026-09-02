@@ -413,26 +413,32 @@
 
 **Status:** ✅ Success
 
-
 **Docs:** `docs/tasks/crafts-hero-backgrounds.md`
 
 
-### 2026-09-02 — إصلاح مشكلتَي CKEditor 5 (الألوان + التمدد الأفقي)
+### 2026-09-02 — Fix CKEditor Colors & Prevent Horizontal Overflow
 
-**Task/Instruction:** (1) إصلاح اختفاء ألوان النصوص وخلفيات خلايا الجداول التي يُعيّنها المشرف عبر CKEditor 5 عند عرضها في الواجهة الأمامية. (2) منع تمدد محرر CKEditor أفقياً خارج حدود الشاشة عند إدراج جداول عريضة أو صور متجاورة.
+**Task/Instruction:** (1) Diagnose and fix the issue where text colors, text background highlights (e.g. orange text with yellow background), and table cell background colors set in CKEditor 5 disappear in the frontend preview (`crafts.show`). (2) Diagnose and fix the issue where CKEditor expands abnormally beyond the screen boundaries when inserting wide tables or side-by-side images (such as Quranic verse images), forcing horizontal window scroll.
 
 **Action Taken:**
-
-| المشكلة | السبب الجذري | الملف | التعديل | الحالة |
-|---------|-------------|-------|---------|--------|
-| اختفاء الألوان | `@tailwindcss/typography` تُعيد تعريف `color: inherit` بخصوصية أعلى من inline styles + قاعدة CSS قديمة مكسورة تستخدم `inherit` بدل `revert` | `resources/css/app.css` | استبدال القاعدة المكسورة بقواعد `color: revert !important` و `background-color: revert !important` | ✅ DONE |
-| تمدد شريط الأدوات | `shouldNotGroupWhenFull: true` يُجبر الأزرار على صف واحد | `resources/js/ckeditor.js` | تغيير إلى `shouldNotGroupWhenFull: false` | ✅ DONE |
-| تمدد منطقة التحرير | غياب CSS يُقيّد `.ck-editor__editable` | `admin/crafts/create.blade.php` | إضافة `@push('styles')` مع CSS: `max-width: 100%`, `overflow-x: hidden`, `flex-wrap: wrap` | ✅ DONE |
-| تمدد منطقة التحرير | غياب CSS + `@push('styles')` | `admin/crafts/edit.blade.php` | إضافة `@push('styles')` مع نفس CSS أعلاه | ✅ DONE |
-| تمدد الجداول/الصور (Frontend) | `.prose table` بلا `overflow-x` وصور بلا `max-width` | `resources/css/app.css` | `display: block; overflow-x: auto` للجداول و `max-width: 100%` للصور | ✅ DONE |
-
-**Vite Build:** `npm run build` → ✓ 898 modules transformed in 11.70s — exit code 0.
+- **Problem 1 (Disappearing Colors):**
+  - Eliminated conflicting CSS rules (`revert !important` and `font-family: inherit`).
+  - Integrated `TableCellProperties`, `TableProperties`, `TableColumnResize`, `TableCaption` in `resources/js/ckeditor.js` with tailored heritage palette for cell backgrounds and borders.
+  - Added dedicated styling in `resources/css/app.css` preserving inline styles for `span[style*="background-color"]` (with rounded padding), text colors, and cell background colors (`td[style*="background-color"]`, `th[style*="background-color"]`) ensuring they override alternating row colors.
+- **Problem 2 (Horizontal Overflow & Blow-out):**
+  - Broke Bootstrap 5 Flexbox minimum content sizing bug by setting `min-width: 0 !important; max-width: 100% !important;` on `.col-12` and `.card-body` in `create.blade.php` and `edit.blade.php`.
+  - Added global horizontal overflow protection on `.page-wrapper`, `html`, `body` in `admin/layout.blade.php`.
+  - Contained CKEditor within `.ck.ck-editor { width: 100% !important; max-width: 100% !important; min-width: 0 !important; }`, wrapped the toolbar with `flex-wrap: wrap`, and added responsive internal horizontal scrolling `.ck-editor__main { overflow-x: auto; }` so wide tables scroll inside the editor without pushing the page.
+  - Constrained images inside CKEditor with `.ck-content figure.image img, .ck-content img { max-width: 100% !important; height: auto !important; }` and `.ck-content figure.image.image-style-side { max-width: 50% !important; }`.
+  - Ensured frontend `.prose figure.table` has `overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%;` and `<main>` column has `min-w-0` in `crafts/show.blade.php`.
+  - Rebuilt assets with `npm run build` (CKEditor bundle: 1,160 kB, CSS bundle: 95.67 kB).
+  - Added test in `tests/Feature/CraftsDirectoryTest.php` and verified all 15 tests pass.
 
 **Status:** ✅ Success
 
-**Docs:** `docs/tasks/ckeditor-colors-and-overflow-fix.md`
+**Docs:** `docs/tasks/fix-ckeditor-colors-and-horizontal-overflow.md`
+
+
+
+
+

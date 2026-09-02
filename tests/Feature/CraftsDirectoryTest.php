@@ -48,6 +48,24 @@ class CraftsDirectoryTest extends TestCase
         $response->assertSee($craft->cover_image_url, false);
     }
 
+    public function test_craft_show_page_renders_styled_colors_and_table_content(): void
+    {
+        $styledContent = '<h2><span style="color:#E67E22;background-color:#FEF3C7;">مقدمة عن حرفة السيرما</span></h2>'
+            . '<figure class="table"><table><tbody><tr><td style="background-color:#FFF6D6;">خلية ملونة</td></tr></tbody></table></figure>';
+
+        $craft = $this->createCraft([
+            'content' => $styledContent,
+        ]);
+
+        $response = $this->get('/crafts/' . $craft->slug);
+
+        $response->assertStatus(200);
+        $response->assertSee('style="color:#E67E22;background-color:#FEF3C7;"', false);
+        $response->assertSee('مقدمة عن حرفة السيرما');
+        $response->assertSee('style="background-color:#FFF6D6;"', false);
+        $response->assertSee('خلية ملونة');
+    }
+
     public function test_non_existent_craft_slug_returns_404(): void
     {
         $response = $this->get('/crafts/non-existent-craft-slug-12345');
@@ -55,3 +73,4 @@ class CraftsDirectoryTest extends TestCase
         $response->assertStatus(404);
     }
 }
+

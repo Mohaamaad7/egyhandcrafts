@@ -6,46 +6,66 @@
 @push('styles')
     <style>
         /* ==========================================
-           CKEditor — منع التمدد الأفقي في لوحة التحكم
+           CKEditor Responsive & Overflow Protection
            ========================================== */
+        .col-12, .card-body {
+            min-width: 0 !important;
+            max-width: 100% !important;
+        }
 
-        /* منطقة التحرير الرئيسية — حد أقصى للعرض */
-        .ck-editor__editable {
+        /* Entire editor container */
+        .ck.ck-editor {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+        }
+
+        /* Toolbar wrap smoothly */
+        .ck-toolbar {
+            flex-wrap: wrap !important;
+            max-width: 100% !important;
+        }
+
+        /* Main editable area container - internal horizontal scroll for wide tables */
+        .ck-editor__main {
+            max-width: 100% !important;
+            min-width: 0 !important;
+            overflow-x: auto !important;
+        }
+
+        /* Editable content area */
+        .ck.ck-content.ck-editor__editable {
             min-height: 380px;
             max-width: 100% !important;
-            overflow-x: hidden !important;
             word-break: break-word;
             overflow-wrap: break-word;
         }
 
-        /* حاوية المحرر لا تتجاوز حاويتها الأب */
-        .ck-editor__main {
-            overflow-x: auto;
-            max-width: 100%;
-        }
-
-        /* شريط الأدوات يلتف عند الامتلاء */
-        .ck-toolbar {
-            flex-wrap: wrap !important;
-        }
-
-        /* الجداول داخل المحرر تأخذ عرض كامل مع scroll أفقي */
-        .ck-editor__editable table {
-            width: 100%;
-            max-width: 100%;
-        }
-
-        /* الصور داخل المحرر لا تتجاوز عرض الحاوية */
-        .ck-editor__editable figure.image,
-        .ck-editor__editable figure.image img,
-        .ck-editor__editable img {
+        /* Tables inside CKEditor */
+        .ck-content figure.table {
             max-width: 100% !important;
-            height: auto;
+            overflow-x: auto !important;
+            margin: 1em 0;
         }
 
-        /* الحاوية الكاملة للمحرر */
-        .ck.ck-editor {
+        .ck-content figure.table table {
             max-width: 100% !important;
+        }
+
+        /* Images inside CKEditor: keep within container */
+        .ck-content figure.image {
+            max-width: 100% !important;
+        }
+
+        .ck-content figure.image img,
+        .ck-content img {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+
+        /* Side-by-side / floated images */
+        .ck-content figure.image.image-style-side {
+            max-width: 50% !important;
         }
     </style>
 @endpush
