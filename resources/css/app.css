@@ -202,8 +202,61 @@
     text-align: center;
 }
 
-/* Ensure inline styles for fonts, sizes, and colors are honored */
+/* ==========================================
+   CKEditor Inline Styles — Override Typography
+   يُجبر المتصفح على احترام الألوان والخطوط
+   التي يُنتجها CKEditor كـ inline styles
+   ========================================== */
+
+/* الألوان المُعرَّفة inline تتغلب على إعادة ضبط typography */
+.prose [style*="color"] {
+    color: revert !important;
+}
+
+.prose [style*="background-color"] {
+    background-color: revert !important;
+}
+
+/* تحديداً لعناصر النص والخلايا */
+.prose span[style*="color"] {
+    color: revert !important;
+}
+
+.prose td[style*="background-color"],
+.prose th[style*="background-color"] {
+    background-color: revert !important;
+}
+
+/* الخطوط المُعرَّفة inline */
 .prose span[style*="font-family"],
-.prose p[style*="font-family"] {
-    font-family: inherit;
+.prose p[style*="font-family"],
+.prose td[style*="font-family"] {
+    font-family: revert !important;
+}
+
+/* أحجام الخطوط المُعرَّفة inline */
+.prose span[style*="font-size"],
+.prose p[style*="font-size"] {
+    font-size: revert !important;
+}
+
+/* ==========================================
+   الجداول في الواجهة الأمامية
+   منع التمدد الأفقي خارج حدود الحاوية
+   ========================================== */
+.prose table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+}
+
+/* ==========================================
+   الصور المتجاورة في الواجهة الأمامية
+   إجبار الصور على البقاء داخل الحاوية
+   ========================================== */
+.prose figure.image,
+.prose figure.image img {
+    max-width: 100% !important;
+    height: auto;
 }

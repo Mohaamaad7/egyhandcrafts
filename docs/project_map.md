@@ -413,8 +413,26 @@
 
 **Status:** ✅ Success
 
+
 **Docs:** `docs/tasks/crafts-hero-backgrounds.md`
 
 
+### 2026-09-02 — إصلاح مشكلتَي CKEditor 5 (الألوان + التمدد الأفقي)
 
+**Task/Instruction:** (1) إصلاح اختفاء ألوان النصوص وخلفيات خلايا الجداول التي يُعيّنها المشرف عبر CKEditor 5 عند عرضها في الواجهة الأمامية. (2) منع تمدد محرر CKEditor أفقياً خارج حدود الشاشة عند إدراج جداول عريضة أو صور متجاورة.
 
+**Action Taken:**
+
+| المشكلة | السبب الجذري | الملف | التعديل | الحالة |
+|---------|-------------|-------|---------|--------|
+| اختفاء الألوان | `@tailwindcss/typography` تُعيد تعريف `color: inherit` بخصوصية أعلى من inline styles + قاعدة CSS قديمة مكسورة تستخدم `inherit` بدل `revert` | `resources/css/app.css` | استبدال القاعدة المكسورة بقواعد `color: revert !important` و `background-color: revert !important` | ✅ DONE |
+| تمدد شريط الأدوات | `shouldNotGroupWhenFull: true` يُجبر الأزرار على صف واحد | `resources/js/ckeditor.js` | تغيير إلى `shouldNotGroupWhenFull: false` | ✅ DONE |
+| تمدد منطقة التحرير | غياب CSS يُقيّد `.ck-editor__editable` | `admin/crafts/create.blade.php` | إضافة `@push('styles')` مع CSS: `max-width: 100%`, `overflow-x: hidden`, `flex-wrap: wrap` | ✅ DONE |
+| تمدد منطقة التحرير | غياب CSS + `@push('styles')` | `admin/crafts/edit.blade.php` | إضافة `@push('styles')` مع نفس CSS أعلاه | ✅ DONE |
+| تمدد الجداول/الصور (Frontend) | `.prose table` بلا `overflow-x` وصور بلا `max-width` | `resources/css/app.css` | `display: block; overflow-x: auto` للجداول و `max-width: 100%` للصور | ✅ DONE |
+
+**Vite Build:** `npm run build` → ✓ 898 modules transformed in 11.70s — exit code 0.
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/ckeditor-colors-and-overflow-fix.md`

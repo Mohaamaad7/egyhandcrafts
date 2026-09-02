@@ -105,7 +105,7 @@ function initEditor() {
                     'sourceEditing', '|',
                     'undo', 'redo',
                 ],
-                shouldNotGroupWhenFull: true,
+                shouldNotGroupWhenFull: false,
             },
             simpleUpload: {
                 uploadUrl: '/admin/crafts/upload-image',

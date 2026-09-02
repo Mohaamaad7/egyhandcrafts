@@ -3,6 +3,53 @@
 @section('title', 'تعديل: ' . $craft->title)
 @section('page_title', 'تعديل الحرفة')
 
+@push('styles')
+    <style>
+        /* ==========================================
+           CKEditor — منع التمدد الأفقي في لوحة التحكم
+           ========================================== */
+
+        /* منطقة التحرير الرئيسية — حد أقصى للعرض */
+        .ck-editor__editable {
+            min-height: 380px;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* حاوية المحرر لا تتجاوز حاويتها الأب */
+        .ck-editor__main {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        /* شريط الأدوات يلتف عند الامتلاء */
+        .ck-toolbar {
+            flex-wrap: wrap !important;
+        }
+
+        /* الجداول داخل المحرر تأخذ عرض كامل مع scroll أفقي */
+        .ck-editor__editable table {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* الصور داخل المحرر لا تتجاوز عرض الحاوية */
+        .ck-editor__editable figure.image,
+        .ck-editor__editable figure.image img,
+        .ck-editor__editable img {
+            max-width: 100% !important;
+            height: auto;
+        }
+
+        /* الحاوية الكاملة للمحرر */
+        .ck.ck-editor {
+            max-width: 100% !important;
+        }
+    </style>
+@endpush
+
 @section('content')
 <div class="container-xl">
     <div class="page-header d-print-none">
