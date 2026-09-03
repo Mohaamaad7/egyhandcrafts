@@ -94,6 +94,8 @@
             transform: translateY(-10px);
         }
     </style>
+
+    @stack('styles')
 </head>
 <body class="arabesque-pattern flex flex-col min-h-screen antialiased text-gray-800 selection:bg-accent selection:text-white">
 
@@ -205,7 +207,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#interactive-map" class="px-3 py-2 rounded-lg text-gray-200 hover:text-accent hover:bg-white/5 transition-colors duration-300 flex items-center gap-2">
+                        <a href="{{ route('map.index') }}" class="px-3 py-2 rounded-lg text-gray-200 hover:text-accent hover:bg-white/5 transition-colors duration-300 flex items-center gap-2">
                             <i class="fas fa-map-marked-alt text-sm text-accent/80"></i>
                             <span>الخريطة التفاعلية</span>
                         </a>
@@ -234,7 +236,7 @@
                     <li><a href="{{ route('home') }}" class="block px-3 py-2 rounded-lg bg-accent/20 text-accent">الرئيسية</a></li>
                     <li><a href="#documented-crafts" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">الحرف الموثقة</a></li>
                     <li><a href="{{ url('/crafts') }}" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">دليل حرف المنوفية</a></li>
-                    <li><a href="#interactive-map" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">الخريطة التفاعلية</a></li>
+                    <li><a href="{{ route('map.index') }}" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">الخريطة التفاعلية</a></li>
                     <li><a href="#artisans-stories" class="block px-3 py-2 rounded-lg hover:bg-white/10 hover:text-accent">قصص الحرفيين</a></li>
                 </ul>
             </div>
@@ -285,6 +287,8 @@
             }
         });
     </script>
+
+    @stack('scripts')
 </body>
 </html>
 

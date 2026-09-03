@@ -436,9 +436,59 @@
   - Verified end-to-end via automated browser simulation that editing and submitting instantly populates textarea with colored spans (`style="background-color:#FEF3C7;color:#D4AF37;"`).
   - Added test in `tests/Feature/CraftsDirectoryTest.php` and verified all 15 tests pass.
 
+
+### 2026-09-03 — The Interactive Heritage Map (الخريطة التفاعلية) & Workshop Directory
+
+**Task/Instruction:** Implement the third core project module "The Interactive Heritage Map" (الخريطة التفاعلية) according to the approved architectural plan:
+1. Replicate the visual & behavioral fidelity of the standalone prototype (`Menofia_handicrafts_workshops_map.html`) using Leaflet.js, Google Maps tiles (Streets & Satellite), heritage sepia filter, dynamic craft/location filter panel, and custom craft markers (Teal gem for Sadaf, Golden scroll for Sirma, Brown hammer for others).
+2. Dynamic CMS & database scalability: Replace hardcoded arrays with a database-backed `workshops` table, `Workshop` model with `Craft` relation, and full Tabler admin CRUD with an interactive Leaflet coordinate picker.
+3. Dedicated workshop profile page (`/workshops/{slug}`) accessible via an elegant CTA button in map popups.
+4. Seed all 18 documented workshops from the prototype without data loss from name collisions.
+5. Localized UI labels passed as JSON for future i18n readiness.
+
+**Action Taken:**
+- **Database & Model:**
+  - Created migration `2026_09_03_120000_create_workshops_table.php` with `id`, `name`, `slug` (unique), `craft_id` (foreign key nullable to `crafts`), `craft_type`, `location`, `owner`, `workers_count`, `phone`, `latitude`, `longitude`, `short_description`, `content`, `cover_image`, `is_active`, `timestamps`.
+  - Created model `app/Models/Workshop.php` with fillable attributes, type casting (`latitude/longitude` as float, `is_active` as boolean), `craft()` `belongsTo` relationship, `cover_image_url` accessor with fallback, and `scopeActive()`.
+  - Updated `app/Models/Craft.php` with inverse `workshops()` `hasMany` relationship.
+- **Seeder:**
+  - Created `database/seeders/WorkshopSeeder.php` containing all 18 prototype workshops (14 Sadaf in Sakiet El-Manqadi, 4 Sirma in Shamma - Ashmoun).
+  - Resolved duplicate name collision for "ورشة الإتحاد لصناعة الصدف الأرابيسك" by appending distinct slug suffixes (`-1` and `-2`), ensuring 100% preservation of all 18 workshops.
+  - Linked workshops to their corresponding `Craft` records (`craft_id`).
+  - Added `WorkshopSeeder` to `database/seeders/DatabaseSeeder.php` after `CraftSeeder`.
+  - Ran migration and seeder; confirmed 18 records in database.
+- **Tabler Admin CRUD:**
+  - Created `app/Http/Controllers/Admin/WorkshopController.php` with `index`, `create`, `store`, `edit`, `update`, `destroy` methods. Includes automatic unique slug resolution, cover image management, and coordinates validation.
+  - Created `resources/views/admin/workshops/index.blade.php`: Tabler table with avatar thumbnails, craft badges, location badges, owner, workers count, active status badge, edit/delete actions, and pagination.
+  - Created `resources/views/admin/workshops/create.blade.php`: Form with craft dropdown from database, location, owner, workers, phone, coordinates inputs + embedded Leaflet mini-map picker (click on map or drag pin to update lat/lng in real time), CKEditor 5 for rich content, and cover image upload.
+  - Created `resources/views/admin/workshops/edit.blade.php`: Pre-populated edit form with Leaflet mini-picker centered on existing coordinates with draggable pin.
+  - Updated `resources/views/admin/layout.blade.php`: Added "ورش الحرف (الخريطة)" navigation item with `ti-map-pin` icon and active state highlighting.
+- **Frontend Architecture:**
+  - Created `app/Http/Controllers/MapController.php`:
+    - `index()`: Fetches active workshops with `craft:id,title,slug`, serializes data using `toJson(JSON_UNESCAPED_UNICODE)`, and passes structured localized labels.
+    - `show(slug)`: Loads workshop profile, eager-loads craft relationship, and suggests related workshops of the same craft type.
+  - Created `resources/views/map/index.blade.php`:
+    - Clean integration inside site layout extending `layouts.app`.
+    - Preserved 100% of the prototype styling: heritage sepia filter (`sepia(0.65) hue-rotate(-15deg) contrast(1.1) brightness(0.95)`), floating filter panel with Amiri/Cairo fonts, responsive mobile stacking, custom FontAwesome markers, hover tooltips, and RTL layer switcher.
+    - Embedded dynamic CTA link button in Leaflet popups directing to `/workshops/{slug}`.
+    - Localized labels passed via JSON for future-proof multi-language support.
+  - Created `resources/views/workshops/show.blade.php`:
+    - Heritage hero with cover image background, breadcrumbs, and metadata badges.
+    - Main column (8/12): Cover image showcase, executive summary, CKEditor rich content, embedded interactive mini-map centered on workshop coordinates, and social share toolbar (WhatsApp, Facebook, Copy link).
+    - Sidebar column (4/12): Workshop identity card, craft directory link, related workshops list, and university project card.
+  - Updated `resources/views/layouts/app.blade.php`: Added `@stack('styles')` and `@stack('scripts')` hooks; updated desktop and mobile navbar links from `#interactive-map` to `route('map.index')`.
+  - Updated `resources/views/home.blade.php`: Updated hero CTA button and interactive map card read-more link to `route('map.index')`.
+- **Testing & Verification:**
+  - Created `tests/Feature/WorkshopMapTest.php` with 17 feature tests covering:
+    - Seeder integrity (exactly 18 workshops, duplicate names preserved with distinct slugs, craft links verified).
+    - Map page rendering, workshop data presence, and localized labels.
+    - Workshop profile page rendering, breadcrumbs, mini-map, and 404 handling.
+    - Admin authentication protection and full CRUD lifecycle (index, create form, store, update, delete).
+    - Navigation link verification from homepage.
+  - Ran full test suite (`php artisan test`): 32 tests passed (80 assertions).
+
 **Status:** ✅ Success
 
-**Docs:** `docs/tasks/fix-ckeditor-colors-and-horizontal-overflow.md`
 
 
 

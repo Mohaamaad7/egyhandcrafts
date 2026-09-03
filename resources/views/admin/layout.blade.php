@@ -60,6 +60,12 @@
                                 <span class="nav-link-title">دليل الحرف</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.workshops.*') ? 'active' : '' }}" href="{{ route('admin.workshops.index') }}">
+                                <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>
+                                <span class="nav-link-title">ورش الحرف (الخريطة)</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

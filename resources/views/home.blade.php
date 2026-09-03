@@ -52,7 +52,7 @@
                 <span>استكشف أقسام المشروع</span>
                 <i class="fas fa-arrow-down text-sm"></i>
             </a>
-            <a href="#interactive-map"
+            <a href="{{ route('map.index') }}"
                 class="inline-flex items-center gap-2.5 bg-primary-dark/80 hover:bg-primary text-white font-semibold text-base px-7 py-3.5 rounded-xl border border-accent/40 hover:border-accent backdrop-blur-md transition-all duration-300 transform hover:-translate-y-1">
                 <i class="fas fa-map-marked-alt text-accent"></i>
                 <span>الخريطة التفاعلية</span>
@@ -196,11 +196,11 @@
                 </div>
 
                 <!-- Read More Link -->
-                <div
+                <a href="{{ route('map.index') }}"
                     class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs sm:text-sm font-bold text-primary group-hover:text-accent transition-colors mt-auto">
                     <span>استكشاف الخريطة الجغرافية</span>
                     <i class="fas fa-arrow-left transition-transform duration-300 group-hover:-translate-x-1.5"></i>
-                </div>
+                </a>
             </div>
 
         </div>

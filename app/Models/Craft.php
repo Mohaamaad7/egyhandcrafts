@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Craft extends Model
@@ -18,6 +19,14 @@ class Craft extends Model
         'location',
         'cover_image',
     ];
+
+    /**
+     * Get all workshops associated with this craft.
+     */
+    public function workshops(): HasMany
+    {
+        return $this->hasMany(\App\Models\Workshop::class);
+    }
 
     /**
      * Get the resolved public URL for the craft's cover image.
