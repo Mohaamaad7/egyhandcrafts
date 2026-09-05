@@ -85,23 +85,6 @@
             {{-- MAIN COLUMN (8 of 12) --}}
             <main class="lg:col-span-8 flex flex-col gap-8 min-w-0">
 
-                {{-- Photo Showcase --}}
-                <div class="bg-white rounded-3xl overflow-hidden shadow-card-soft border border-gray-100/90 relative group" data-aos="fade-up">
-                    <div class="relative max-h-[520px] overflow-hidden bg-primary/5">
-                        <img src="{{ $story->photo_url }}"
-                             alt="{{ $story->craftsman_name }}"
-                             class="w-full h-full max-h-[520px] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                             onerror="this.onerror=null; this.src='{{ asset('assets/images/HeroBG.jpg') }}';">
-                    </div>
-                    <div class="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-                        <span class="flex items-center gap-1.5">
-                            <i class="fas fa-camera text-accent"></i>
-                            <span>صورة توثيقية ميدانية للحرفي</span>
-                        </span>
-                        <span class="text-primary font-bold">{{ $story->craftsman_role }}</span>
-                    </div>
-                </div>
-
                 {{-- Executive Summary Quote Card --}}
                 <div class="bg-white border-r-4 border-accent rounded-3xl p-6 md:p-8 shadow-card-soft relative overflow-hidden" data-aos="fade-up">
                     <div class="flex items-start gap-4">
@@ -127,48 +110,51 @@
                 {{-- ============================================================ --}}
                 {{-- CONDITIONAL MULTIMEDIA — STRICT ZERO-GHOST-SPACE ENFORCEMENT --}}
                 {{-- ============================================================ --}}
+                @if($story->has_audio || $story->has_video)
+                    <div class="flex flex-col gap-6" data-aos="fade-up">
+                        {{-- YouTube Video Embed (only if video exists) --}}
+                        @if($story->has_video)
+                            <div class="bg-white rounded-3xl overflow-hidden shadow-card-soft border border-gray-100/80">
+                                <div class="p-5 border-b border-gray-100 flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-video text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold font-serif text-primary">التوثيق المرئي للشهادة</h3>
+                                        <p class="text-xs text-gray-400">فيديو ميداني من داخل ورشة الحرفي</p>
+                                    </div>
+                                </div>
+                                <div class="relative w-full" style="padding-top: 56.25%;">
+                                    <iframe src="{{ $story->youtube_embed_url }}"
+                                            class="absolute inset-0 w-full h-full"
+                                            frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen
+                                            loading="lazy"></iframe>
+                                </div>
+                            </div>
+                        @endif
 
-                {{-- YouTube Video Embed (only if video exists) --}}
-                @if($story->has_video)
-                    <div class="bg-white rounded-3xl overflow-hidden shadow-card-soft border border-gray-100/80" data-aos="fade-up">
-                        <div class="p-5 border-b border-gray-100 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-video text-lg"></i>
+                        {{-- Audio Player (only if audio exists) --}}
+                        @if($story->has_audio)
+                            <div class="bg-white rounded-3xl overflow-hidden shadow-card-soft border border-gray-100/80 p-6">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-headphones text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold font-serif text-primary">التسجيل الصوتي الميداني</h3>
+                                        <p class="text-xs text-gray-400">مقطع صوتي موثّق من داخل الورشة</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-l from-primary/5 to-accent/5 rounded-2xl p-4 border border-gray-100">
+                                    <audio controls class="w-full" preload="metadata">
+                                        <source src="{{ $story->audio_file_url }}" type="audio/mpeg">
+                                        المتصفح لا يدعم مشغل الصوتيات.
+                                    </audio>
+                                </div>
                             </div>
-                            <div>
-                                <h3 class="text-lg font-bold font-serif text-primary">التوثيق المرئي للشهادة</h3>
-                                <p class="text-xs text-gray-400">فيديو ميداني من داخل ورشة الحرفي</p>
-                            </div>
-                        </div>
-                        <div class="relative w-full" style="padding-top: 56.25%;">
-                            <iframe src="{{ $story->youtube_embed_url }}"
-                                    class="absolute inset-0 w-full h-full"
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen
-                                    loading="lazy"></iframe>
-                        </div>
-                    </div>
-                @endif
-
-                {{-- Audio Player (only if audio exists) --}}
-                @if($story->has_audio)
-                    <div class="bg-white rounded-3xl overflow-hidden shadow-card-soft border border-gray-100/80 p-6" data-aos="fade-up">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-headphones text-lg"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold font-serif text-primary">التسجيل الصوتي الميداني</h3>
-                                <p class="text-xs text-gray-400">مقطع صوتي موثّق من داخل الورشة</p>
-                            </div>
-                        </div>
-                        <div class="bg-gradient-to-l from-primary/5 to-accent/5 rounded-2xl p-4 border border-gray-100">
-                            <audio controls class="w-full" preload="metadata">
-                                <source src="{{ $story->audio_file_url }}" type="audio/mpeg">
-                                المتصفح لا يدعم مشغل الصوتيات.
-                            </audio>
-                        </div>
+                        @endif
                     </div>
                 @endif
 
@@ -262,18 +248,31 @@
             <aside class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-8">
 
                 {{-- Craftsman Identity Card --}}
-                <div class="bg-white rounded-3xl overflow-hidden shadow-card-soft border border-gray-100 text-center" data-aos="fade-up">
-                    <div class="h-2 bg-gradient-to-l from-accent to-gold"></div>
-                    <div class="p-6">
-                        <div class="w-28 h-28 mx-auto rounded-full overflow-hidden border-4 border-accent/20 shadow-md mb-4">
-                            <img src="{{ $story->photo_url }}" alt="{{ $story->craftsman_name }}"
-                                 class="w-full h-full object-cover"
-                                 onerror="this.onerror=null; this.src='{{ asset('assets/images/HeroBG.jpg') }}';">
+                <div class="bg-white rounded-3xl overflow-hidden shadow-card-soft border border-gray-100/90 text-center" data-aos="fade-up">
+                    <div class="h-2.5 bg-gradient-to-l from-accent via-gold to-primary"></div>
+                    <div class="p-6 sm:p-8">
+                        {{-- Consolidated Artisan Portrait with Elegant Frame & Verified Badge --}}
+                        <div class="relative w-36 h-36 mx-auto mb-5">
+                            <div class="w-full h-full rounded-2xl overflow-hidden border-2 border-accent/40 shadow-md ring-4 ring-primary/5 group">
+                                <img src="{{ $story->photo_url }}" alt="{{ $story->craftsman_name }}"
+                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                     onerror="this.onerror=null; this.src='{{ asset('assets/images/HeroBG.jpg') }}';">
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 bg-accent text-white w-7 h-7 rounded-full flex items-center justify-center shadow-md border-2 border-white text-xs"
+                                 title="حرفي موثق ميدانياً">
+                                <i class="fas fa-check"></i>
+                            </div>
                         </div>
-                        <h3 class="text-xl font-bold font-serif text-primary mb-1">{{ $story->craftsman_name }}</h3>
-                        <p class="text-sm text-accent font-bold mb-3">{{ $story->craftsman_role }}</p>
 
-                        <div class="flex justify-center gap-2 flex-wrap">
+                        <div class="inline-flex items-center gap-1.5 bg-accent/10 text-accent text-xs font-bold px-3 py-1 rounded-full mb-3">
+                            <i class="fas fa-certificate text-gold text-[10px]"></i>
+                            <span>بطاقة توثيق الحرفي</span>
+                        </div>
+
+                        <h3 class="text-2xl font-bold font-serif text-primary mb-1">{{ $story->craftsman_name }}</h3>
+                        <p class="text-sm text-accent font-bold mb-4">{{ $story->craftsman_role }}</p>
+
+                        <div class="flex justify-center gap-2 flex-wrap pt-4 border-t border-gray-100">
                             @if($story->has_video)
                                 <span class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-bold px-3 py-1 rounded-full">
                                     <i class="fas fa-video text-[10px]"></i> توثيق مرئي

@@ -559,3 +559,50 @@
 **Status:** ✅ Success
 
 **Docs:** `docs/tasks/craftsmen-stories-module.md`
+
+
+
+### 2026-09-05 — Craftsmen Stories: UI Redundancy & Zero-Ghost-Space Media Fix (تحسين تجربة المستخدم وإزالة الوسائط)
+
+**Task/Instruction:** Address UI/UX regressions and media management limitations in the Craftsmen Stories module:
+1. Eliminate visual redundancy in `stories/show.blade.php` (remove giant 520px landscape photo banner duplicating the sidebar portrait).
+2. Fix zero-ghost-space failure: prevent dead audio player (`0:00 / 0:00`) from rendering when files are missing from disk.
+3. Add admin audio file deletion/detachment checkbox (`delete_audio`) and YouTube URL removal support in Tabler admin edit form.
+4. Ensure index badges (🎙️ / 🎬) only display when physical media files genuinely exist on disk.
+5. Set Mohamed Hassan's placeholder audio file to `null` in `CraftsmanStorySeeder` until genuine recordings are uploaded.
+
+**Action Taken:**
+- **Model Enhancement (`app/Models/CraftsmanStory.php`):**
+  - Updated `getHasAudioAttribute()` to check both non-empty and physical existence on disk via `Storage::disk('public')->exists($this->audio_file)` (or valid URL).
+  - Updated `getHasVideoAttribute()` to verify valid embed resolution.
+  - Updated `getAudioFileUrlAttribute()` to return `null` if the file does not exist on disk.
+- **Frontend Detail View (`resources/views/stories/show.blade.php`):**
+  - Removed duplicate 520px photo banner from the main column.
+  - Consolidated the artisan photo into an upgraded sidebar card with a framed portrait (`w-36 h-36 rounded-2xl border-2 border-accent/40 shadow-md ring-4 ring-primary/5`), verified artisan badge (`حرفي موثق ميدانياً`), and status pills.
+  - Wrapped multimedia section strictly inside `@if($story->has_audio || $story->has_video)` ensuring zero ghost space or DOM overhead when no media exists.
+- **Admin CRUD (`app/Http/Controllers/Admin/CraftsmanStoryController.php` & `resources/views/admin/stories/edit.blade.php`):**
+  - In `edit.blade.php`: added styled audio preview card with red `delete_audio` checkbox ("حذف الملف الصوتي نهائياً") and clear YouTube removal guidance.
+  - In `CraftsmanStoryController@update`: added `$request->boolean('delete_audio')` handling with physical storage disk deletion, protected existing photos/audio from accidental nullification when no replacement is uploaded, and enabled clearing of YouTube URLs.
+- **Seeder (`database/seeders/CraftsmanStorySeeder.php`):**
+  - Set Mohamed Hassan's `audio_file` to `null` (and updated local MySQL DB via tinker) so default data adheres to zero-ghost-space.
+- **Testing (`tests/Feature/CraftsmanStoryTest.php`):**
+  - Updated seeder media assertions and audio rendering test to use fake storage with real file.
+  - Added 5 new tests: `test_has_audio_returns_false_if_file_missing_from_disk`, `test_story_show_does_not_render_duplicate_photo_banner`, `test_admin_can_delete_audio_from_story`, `test_admin_can_clear_youtube_url`, `test_stories_index_hides_badges_when_no_media`.
+  - Full suite: **65 passed (169 assertions), 100% success rate**.
+
+**Files Modified:**
+- `app/Models/CraftsmanStory.php`
+- `app/Http/Controllers/Admin/CraftsmanStoryController.php`
+- `resources/views/admin/stories/edit.blade.php`
+- `resources/views/stories/show.blade.php`
+- `database/seeders/CraftsmanStorySeeder.php`
+- `tests/Feature/CraftsmanStoryTest.php`
+- `docs/project_map.md`
+
+**Files Created:**
+- `docs/tasks/craftsmen-stories-media-and-ui-fix.md`
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/craftsmen-stories-media-and-ui-fix.md`
+

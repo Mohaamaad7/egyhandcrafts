@@ -173,12 +173,19 @@
                     <div class="col-md-6">
                         <label class="form-label">تسجيل صوتي ميداني</label>
                         @if($story->audio_file)
-                            <div class="mb-2">
-                                <audio controls class="w-100">
+                            <div class="p-3 mb-2 bg-light rounded border">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-amber-lt"><i class="ti ti-headphones me-1"></i> التسجيل الصوتي الحالي</span>
+                                    <label class="form-check form-check-inline text-danger mb-0">
+                                        <input class="form-check-input" type="checkbox" name="delete_audio" value="1" id="delete_audio">
+                                        <span class="form-check-label fw-bold"><i class="ti ti-trash me-1"></i> حذف الملف الصوتي نهائياً</span>
+                                    </label>
+                                </div>
+                                <audio controls class="w-100 mb-1">
                                     <source src="{{ $story->audio_file_url }}" type="audio/mpeg">
                                     المتصفح لا يدعم مشغل الصوتيات.
                                 </audio>
-                                <div class="form-text">التسجيل الحالي — ارفع ملفاً جديداً لاستبداله.</div>
+                                <div class="form-text text-muted">ارفع ملفاً جديداً أدناه لاستبدال هذا الملف، أو حدد خيار الحذف لإزالته.</div>
                             </div>
                         @endif
                         <input type="file" name="audio_file" class="form-control @error('audio_file') is-invalid @enderror"
@@ -192,8 +199,9 @@
                     {{-- YouTube URL --}}
                     <div class="col-md-6">
                         <label class="form-label">رابط فيديو يوتيوب</label>
-                        <input type="url" name="youtube_url" class="form-control @error('youtube_url') is-invalid @enderror"
+                        <input type="url" name="youtube_url" id="youtube_url" class="form-control @error('youtube_url') is-invalid @enderror"
                                value="{{ old('youtube_url', $story->youtube_url) }}" placeholder="https://www.youtube.com/watch?v=...">
+                        <div class="form-text">اترك الحقل فارغاً إذا أردت إزالة الفيديو نهائياً من الشهادة.</div>
                         @error('youtube_url')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

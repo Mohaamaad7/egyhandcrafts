@@ -42,12 +42,12 @@ class CraftsmanStoryTest extends TestCase
         $this->assertTrue($abuQouta->has_video);
         $this->assertFalse($abuQouta->has_audio);
 
-        // Mohamed Hassan has audio, no video
+        // Mohamed Hassan: audio is null until genuine fieldwork recording is uploaded
         $mohamedHassan = CraftsmanStory::where('craftsman_name', 'الأسطى محمد حسن')->first();
         $this->assertNull($mohamedHassan->youtube_url);
-        $this->assertNotNull($mohamedHassan->audio_file);
+        $this->assertNull($mohamedHassan->audio_file);
         $this->assertFalse($mohamedHassan->has_video);
-        $this->assertTrue($mohamedHassan->has_audio);
+        $this->assertFalse($mohamedHassan->has_audio);
 
         // Hamada Ensan has neither video nor audio (text-only)
         $hamadaEnsan = CraftsmanStory::where('craftsman_name', 'الأسطى حمادة إنسان')->first();
@@ -120,6 +120,20 @@ class CraftsmanStoryTest extends TestCase
     public function test_stories_index_displays_media_badges(): void
     {
         $this->seed(CraftsmanStorySeeder::class);
+
+        // Create an audio story with physical file so the badge is rendered
+        Storage::fake('public');
+        Storage::disk('public')->put('stories/audio/voice.mp3', 'dummy');
+        CraftsmanStory::create([
+            'title'          => 'Audio Badge Story',
+            'slug'           => 'audio-badge-story',
+            'craftsman_name' => 'Audio Badge Artisan',
+            'craftsman_role' => 'Audio Role',
+            'content'        => '<p>Content</p>',
+            'audio_file'     => 'stories/audio/voice.mp3',
+            'is_published'   => true,
+        ]);
+
         $response = $this->get(route('stories.index'));
 
         $response->assertSee('توثيق مرئي');
@@ -169,13 +183,36 @@ class CraftsmanStoryTest extends TestCase
 
     public function test_story_with_audio_renders_audio_tag(): void
     {
-        $this->seed(CraftsmanStorySeeder::class);
-        $story = CraftsmanStory::where('craftsman_name', 'الأسطى محمد حسن')->first();
+        Storage::fake('public');
+        Storage::disk('public')->put('stories/audio/voice.mp3', 'dummy audio content');
+
+        $story = CraftsmanStory::create([
+            'title'          => 'Audio Test Story',
+            'slug'           => 'audio-test-story',
+            'craftsman_name' => 'Audio Artisan',
+            'craftsman_role' => 'Audio Master',
+            'content'        => '<p>Audio story body</p>',
+            'audio_file'     => 'stories/audio/voice.mp3',
+            'is_published'   => true,
+        ]);
+
+        $this->assertTrue($story->has_audio);
 
         $response = $this->get(route('stories.show', $story->slug));
         $response->assertSee('<audio', false);
         $response->assertSee('<source', false);
         $response->assertSee('المتصفح لا يدعم مشغل الصوتيات', false);
+    }
+
+    public function test_has_audio_returns_false_if_file_missing_from_disk(): void
+    {
+        Storage::fake('public');
+        $story = CraftsmanStory::factory()->make([
+            'audio_file' => 'stories/audio/ghost_recording.mp3',
+        ]);
+
+        $this->assertFalse($story->has_audio);
+        $this->assertNull($story->audio_file_url);
     }
 
     public function test_story_without_media_renders_no_audio_or_iframe(): void
@@ -186,6 +223,21 @@ class CraftsmanStoryTest extends TestCase
         $response = $this->get(route('stories.show', $story->slug));
         $response->assertDontSee('<audio', false);
         $response->assertDontSee('<iframe', false);
+        $response->assertDontSee('التسجيل الصوتي الميداني');
+        $response->assertDontSee('التوثيق المرئي للشهادة');
+    }
+
+    public function test_story_show_does_not_render_duplicate_photo_banner(): void
+    {
+        $this->seed(CraftsmanStorySeeder::class);
+        $story = CraftsmanStory::first();
+
+        $response = $this->get(route('stories.show', $story->slug));
+        $response->assertStatus(200);
+        // The old duplicate photo caption in main column must NOT exist
+        $response->assertDontSee('صورة توثيقية ميدانية للحرفي');
+        // The consolidated sidebar card must exist
+        $response->assertSee('بطاقة توثيق الحرفي');
     }
 
     // ─── Unpublished Stories ────────────────────────────────────────────────
@@ -302,6 +354,91 @@ class CraftsmanStoryTest extends TestCase
         $this->assertDatabaseHas('craftsmen_stories', [
             'craftsman_name' => 'Updated Name',
         ]);
+    }
+
+    public function test_admin_can_delete_audio_from_story(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('stories/audio/to_delete.mp3', 'sample audio content');
+
+        $user = User::factory()->create();
+        $story = CraftsmanStory::create([
+            'title'          => 'Story With Audio',
+            'slug'           => 'story-with-audio',
+            'craftsman_name' => 'Audio Master',
+            'craftsman_role' => 'Master Artisan',
+            'content'        => '<p>Content</p>',
+            'audio_file'     => 'stories/audio/to_delete.mp3',
+            'is_published'   => true,
+        ]);
+
+        Storage::disk('public')->assertExists('stories/audio/to_delete.mp3');
+
+        $response = $this->actingAs($user)->put(route('admin.stories.update', $story), [
+            'title'          => $story->title,
+            'craftsman_name' => $story->craftsman_name,
+            'craftsman_role' => $story->craftsman_role,
+            'content'        => $story->content,
+            'delete_audio'   => '1',
+            'is_published'   => '1',
+        ]);
+
+        $response->assertRedirect(route('admin.stories.index'));
+        $story->refresh();
+        $this->assertNull($story->audio_file);
+        $this->assertFalse($story->has_audio);
+        Storage::disk('public')->assertMissing('stories/audio/to_delete.mp3');
+    }
+
+    public function test_admin_can_clear_youtube_url(): void
+    {
+        $user = User::factory()->create();
+        $story = CraftsmanStory::create([
+            'title'          => 'Story With Video',
+            'slug'           => 'story-with-video',
+            'craftsman_name' => 'Video Master',
+            'craftsman_role' => 'Video Artisan',
+            'content'        => '<p>Content</p>',
+            'youtube_url'    => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'is_published'   => true,
+        ]);
+
+        $this->assertTrue($story->has_video);
+
+        $response = $this->actingAs($user)->put(route('admin.stories.update', $story), [
+            'title'          => $story->title,
+            'craftsman_name' => $story->craftsman_name,
+            'craftsman_role' => $story->craftsman_role,
+            'content'        => $story->content,
+            'youtube_url'    => '',
+            'is_published'   => '1',
+        ]);
+
+        $response->assertRedirect(route('admin.stories.index'));
+        $story->refresh();
+        $this->assertNull($story->youtube_url);
+        $this->assertFalse($story->has_video);
+    }
+
+    public function test_stories_index_hides_badges_when_no_media(): void
+    {
+        $story = CraftsmanStory::create([
+            'title'          => 'Pure Text Story',
+            'slug'           => 'pure-text-story',
+            'craftsman_name' => 'Text Only Master',
+            'craftsman_role' => 'Heritage Historian',
+            'content'        => '<p>Pure text interview</p>',
+            'youtube_url'    => null,
+            'audio_file'     => null,
+            'is_published'   => true,
+        ]);
+
+        $response = $this->get(route('stories.index'));
+        $response->assertStatus(200);
+        $response->assertSee('Text Only Master');
+        // When there is only text, neither badge should appear on that card
+        $this->assertFalse($story->has_audio);
+        $this->assertFalse($story->has_video);
     }
 
     public function test_admin_can_delete_story(): void

@@ -104,6 +104,7 @@ class CraftsmanStoryController extends Controller
             'youtube_url'    => 'nullable|url|max:500',
             'photo'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'audio_file'     => 'nullable|file|mimes:mp3,wav,m4a,aac,ogg|max:51200',
+            'delete_audio'   => 'nullable|boolean',
             'is_published'   => 'nullable|boolean',
         ]);
 
@@ -118,6 +119,9 @@ class CraftsmanStoryController extends Controller
         // Handle publication status (checkbox)
         $validated['is_published'] = $request->has('is_published');
 
+        // Explicitly handle youtube_url so clearing the input saves as null
+        $validated['youtube_url'] = $request->filled('youtube_url') ? $request->input('youtube_url') : null;
+
         // Auto-generate excerpt from content if not provided
         if (empty($validated['excerpt'])) {
             $plain = strip_tags($validated['content']);
@@ -127,23 +131,34 @@ class CraftsmanStoryController extends Controller
             $validated['excerpt'] = implode(' ', array_slice($words, 0, 25)) . '…';
         }
 
-        // Handle photo upload (delete old)
+        // Handle photo upload (delete old if replaced, preserve if untouched)
         if ($request->hasFile('photo')) {
             if ($story->photo) {
                 Storage::disk('public')->delete($story->photo);
             }
             $validated['photo'] = $request->file('photo')
                 ->store('stories/photos', 'public');
+        } else {
+            unset($validated['photo']);
         }
 
-        // Handle audio file upload (delete old)
-        if ($request->hasFile('audio_file')) {
+        // Handle audio file deletion or replacement
+        if ($request->boolean('delete_audio')) {
+            if ($story->audio_file) {
+                Storage::disk('public')->delete($story->audio_file);
+            }
+            $validated['audio_file'] = null;
+        } elseif ($request->hasFile('audio_file')) {
             if ($story->audio_file) {
                 Storage::disk('public')->delete($story->audio_file);
             }
             $validated['audio_file'] = $request->file('audio_file')
                 ->store('stories/audio', 'public');
+        } else {
+            unset($validated['audio_file']);
         }
+
+        unset($validated['delete_audio']);
 
         $story->update($validated);
 

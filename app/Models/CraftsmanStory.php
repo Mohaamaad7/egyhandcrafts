@@ -85,7 +85,7 @@ class CraftsmanStory extends Model
             return Storage::url($this->audio_file);
         }
 
-        return asset('storage/' . ltrim($this->audio_file, '/'));
+        return null;
     }
 
     /**
@@ -114,19 +114,27 @@ class CraftsmanStory extends Model
     }
 
     /**
-     * Check if this story has an audio recording.
+     * Check if this story has an audio recording that physically exists on disk.
      */
     public function getHasAudioAttribute(): bool
     {
-        return !empty($this->audio_file);
+        if (empty($this->audio_file)) {
+            return false;
+        }
+
+        if (filter_var($this->audio_file, FILTER_VALIDATE_URL)) {
+            return true;
+        }
+
+        return Storage::disk('public')->exists($this->audio_file);
     }
 
     /**
-     * Check if this story has a video recording.
+     * Check if this story has a valid video recording.
      */
     public function getHasVideoAttribute(): bool
     {
-        return !empty($this->youtube_embed_url);
+        return !empty($this->youtube_url) && !empty($this->youtube_embed_url);
     }
 
     /**
