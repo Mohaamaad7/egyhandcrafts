@@ -3,8 +3,10 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FrontendCraftController;
 use App\Http\Controllers\MapController;
+use App\Http\Controllers\CraftsmanStoryController;
 use App\Http\Controllers\Admin\CraftController as AdminCraftController;
 use App\Http\Controllers\Admin\WorkshopController as AdminWorkshopController;
+use App\Http\Controllers\Admin\CraftsmanStoryController as AdminStoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,6 +42,16 @@ Route::prefix('admin/workshops')->name('admin.workshops.')->middleware('auth')->
     Route::delete('/{workshop}',   [AdminWorkshopController::class, 'destroy'])->name('destroy');
 });
 
+// ─── Admin: Craftsmen Stories CRUD ─────────────────────────────────────────
+Route::prefix('admin/stories')->name('admin.stories.')->middleware('auth')->group(function () {
+    Route::get('/',              [AdminStoryController::class, 'index'])->name('index');
+    Route::get('/create',        [AdminStoryController::class, 'create'])->name('create');
+    Route::post('/',             [AdminStoryController::class, 'store'])->name('store');
+    Route::get('/{story}/edit',  [AdminStoryController::class, 'edit'])->name('edit');
+    Route::put('/{story}',       [AdminStoryController::class, 'update'])->name('update');
+    Route::delete('/{story}',    [AdminStoryController::class, 'destroy'])->name('destroy');
+});
+
 // ─── Frontend: Crafts Directory ────────────────────────────────────────────
 Route::get('/crafts',          [FrontendCraftController::class, 'index'])->name('crafts.index');
 Route::get('/crafts/{slug}',   [FrontendCraftController::class, 'show'])->name('crafts.show');
@@ -49,4 +61,9 @@ Route::get('/map',             [MapController::class, 'index'])->name('map.index
 
 // ─── Frontend: Workshop Profile ────────────────────────────────────────────
 Route::get('/workshops/{slug}', [MapController::class, 'show'])->name('workshops.show');
+
+// ─── Frontend: Craftsmen Stories & Testimonials ────────────────────────────
+Route::get('/stories',          [CraftsmanStoryController::class, 'index'])->name('stories.index');
+Route::get('/stories/{slug}',   [CraftsmanStoryController::class, 'show'])->name('stories.show');
+
 

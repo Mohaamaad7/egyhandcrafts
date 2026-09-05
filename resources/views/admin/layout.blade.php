@@ -66,6 +66,12 @@
                                 <span class="nav-link-title">ورش الحرف (الخريطة)</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.stories.*') ? 'active' : '' }}" href="{{ route('admin.stories.index') }}">
+                                <span class="nav-link-icon"><i class="ti ti-microphone"></i></span>
+                                <span class="nav-link-title">قصص وشهادات الحرفيين</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

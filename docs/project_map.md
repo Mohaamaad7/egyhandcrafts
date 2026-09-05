@@ -493,4 +493,69 @@
 
 
 
+### 2026-09-05 — Craftsmen Stories & Testimonials (قصص وشهادات الحرفيين)
 
+**Task/Instruction:** Implement the fourth and final core module "Craftsmen Stories & Testimonials" (قصص وشهادات الحرفيين) — a standalone module for preserving first-person craftsman testimonies with rich text, audio recordings, and YouTube video embeds. Key requirements: decoupled architecture (no FK to crafts/workshops), zero-ghost-space conditional multimedia rendering, robust YouTube ID extraction, cross-browser audio player, fallback image verification, and 50MB audio upload support.
+
+**Action Taken:**
+- **Database & Model:**
+  - Created migration `2026_09_05_150000_create_craftsmen_stories_table.php` with fields: `id`, `title`, `slug` (unique), `craftsman_name`, `craftsman_role`, `photo` (nullable), `content` (longText), `excerpt` (nullable), `youtube_url` (nullable), `audio_file` (nullable), `is_published` (default true), `timestamps`.
+  - Created `app/Models/CraftsmanStory.php` with fillable attributes, boolean cast for `is_published`, and accessors: `photo_url` (with runtime `file_exists()` fallback verification), `audio_file_url`, `youtube_embed_url` (resilient regex handling watch/youtu.be/shorts/extra params → `youtube-nocookie.com` privacy embed), `has_audio`, `has_video`, `excerpt_text` (20–22 word strip). Scope: `scopePublished()`.
+  - Created `database/factories/CraftsmanStoryFactory.php` for YouTube extraction unit tests.
+- **Admin CRUD (Tabler):**
+  - Created `app/Http/Controllers/Admin/CraftsmanStoryController.php` with `index`, `create`, `store`, `edit`, `update`, `destroy`. Photo upload to `stories/photos`, audio upload to `stories/audio` (max 50MB, MIME: mp3/wav/m4a/aac/ogg), slug collision loop, auto-excerpt from stripped content, old-file deletion on update/destroy.
+  - Created `resources/views/admin/stories/index.blade.php`: Tabler table with portrait thumbnails, craftsman name+role, media badges (🎬 video / 🎙️ audio / 📝 text), publication status badge, preview/edit/delete actions.
+  - Created `resources/views/admin/stories/create.blade.php`: Full form with CKEditor 5 (`@vite('resources/js/ckeditor.js')`), photo/audio uploads, YouTube URL, publish toggle, CKEditor overflow protection CSS.
+  - Created `resources/views/admin/stories/edit.blade.php`: Pre-populated form with current photo thumbnail, audio player preview, YouTube embed preview.
+  - Updated `resources/views/admin/layout.blade.php`: Added "قصص وشهادات الحرفيين" sidebar nav item with `ti-microphone` icon and active route highlighting.
+- **Public Frontend (Tailwind RTL):**
+  - Created `app/Http/Controllers/CraftsmanStoryController.php` with `index()` (paginated published stories) and `show($slug)` (detail with prev/next navigation and other stories).
+  - Created `resources/views/stories/index.blade.php`: Heritage hero banner (arabesque, amber/gold accents), 3-column responsive grid with artisan portrait cards, media indicator badges, role badges, excerpt snippets, and CTA buttons.
+  - Created `resources/views/stories/show.blade.php`: 2-column responsive layout (8-col main / 4-col sidebar). Main: photo showcase, executive summary quote, full `.prose prose-lg` article, **zero-ghost-space conditional multimedia** (video iframe only if `has_video`, audio with nested `<source>` tag only if `has_audio`, zero containers if neither), social share toolbar (WhatsApp, Facebook, X, Copy Link, Print), prev/next navigation. Sidebar: craftsman identity card, other documented stories list, university project card.
+  - Updated `routes/web.php`: Added admin stories CRUD routes under `prefix('admin/stories')->name('admin.stories.')->middleware('auth')` and frontend routes `GET /stories` + `GET /stories/{slug}`.
+  - Updated `resources/views/layouts/app.blade.php`: Desktop + mobile nav links changed from `#artisans-stories` to `route('stories.index')`.
+  - Updated `resources/views/home.blade.php`: Card 4 read-more CTA converted from `<div>` to `<a href="{{ route('stories.index') }}">`.
+- **Seeder:**
+  - Created `database/seeders/CraftsmanStorySeeder.php` with 3 authentic fieldwork master interviews:
+    1. **الحاج محمود أبو قوطة** — Syndicate head, Sakiet El-Manqadi pioneer (YouTube video, no audio).
+    2. **الأسطى محمد حسن** — 37 years, overcame polio, master of الرباط (audio testimony, no video).
+    3. **الأسطى حمادة إنسان** — 27 years, finishing/varnishing specialist (text-only — zero-ghost-space verification target).
+  - Updated `database/seeders/DatabaseSeeder.php` with `CraftsmanStorySeeder` call.
+- **Testing & Verification:**
+  - Created `tests/Feature/CraftsmanStoryTest.php` with 28 feature tests (66 assertions):
+    - Seeder: 3 stories, correct names, correct media assignments.
+    - YouTube extraction: 6 tests (standard/short/shorts/extra params/null/invalid).
+    - Frontend index: renders 200, displays names/roles/media badges.
+    - Frontend detail: valid slug 200, invalid slug 404, breadcrumbs.
+    - Zero-ghost-space: video→iframe, audio→`<audio>+<source>`, neither→zero containers.
+    - Unpublished: hidden from index, 404 on show.
+    - Admin CRUD: auth gate, list, create form, store+slug+photo+auto-excerpt, update, delete.
+    - Navigation: homepage + header links to `stories.index`.
+  - Full test suite: **60 tests passed (146 assertions), zero regressions**.
+
+**Files Created:**
+- `database/migrations/2026_09_05_150000_create_craftsmen_stories_table.php`
+- `app/Models/CraftsmanStory.php`
+- `database/factories/CraftsmanStoryFactory.php`
+- `app/Http/Controllers/Admin/CraftsmanStoryController.php`
+- `app/Http/Controllers/CraftsmanStoryController.php`
+- `resources/views/admin/stories/index.blade.php`
+- `resources/views/admin/stories/create.blade.php`
+- `resources/views/admin/stories/edit.blade.php`
+- `resources/views/stories/index.blade.php`
+- `resources/views/stories/show.blade.php`
+- `database/seeders/CraftsmanStorySeeder.php`
+- `tests/Feature/CraftsmanStoryTest.php`
+- `docs/tasks/craftsmen-stories-module.md`
+
+**Files Modified:**
+- `routes/web.php` — 8 new admin routes + 2 frontend routes
+- `resources/views/admin/layout.blade.php` — stories sidebar nav item
+- `resources/views/layouts/app.blade.php` — desktop + mobile nav links
+- `resources/views/home.blade.php` — Card 4 CTA linked
+- `database/seeders/DatabaseSeeder.php` — wired CraftsmanStorySeeder
+- `docs/project_map.md` — this log entry
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/craftsmen-stories-module.md`
