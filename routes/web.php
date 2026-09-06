@@ -4,9 +4,13 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FrontendCraftController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\CraftsmanStoryController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\CraftController as AdminCraftController;
 use App\Http\Controllers\Admin\WorkshopController as AdminWorkshopController;
 use App\Http\Controllers\Admin\CraftsmanStoryController as AdminStoryController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Middleware\EnsureSuperAdmin;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,9 +21,24 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/admin', function () {
-    return view('admin.dashboard');
-})->name('admin.dashboard')->middleware('auth');
+Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard')->middleware('auth');
+
+// ─── Admin: Personal Profile & Credentials ──────────────────────────────────
+Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth')->group(function () {
+    Route::get('/',              [AdminProfileController::class, 'edit'])->name('edit');
+    Route::put('/',              [AdminProfileController::class, 'update'])->name('update');
+    Route::put('/password',      [AdminProfileController::class, 'updatePassword'])->name('password');
+});
+
+// ─── Admin: Users & Team CRUD ──────────────────────────────────────────────
+Route::prefix('admin/users')->name('admin.users.')->middleware(['auth', EnsureSuperAdmin::class])->group(function () {
+    Route::get('/',             [AdminUserController::class, 'index'])->name('index');
+    Route::get('/create',       [AdminUserController::class, 'create'])->name('create');
+    Route::post('/',            [AdminUserController::class, 'store'])->name('store');
+    Route::get('/{user}/edit',  [AdminUserController::class, 'edit'])->name('edit');
+    Route::put('/{user}',       [AdminUserController::class, 'update'])->name('update');
+    Route::delete('/{user}',    [AdminUserController::class, 'destroy'])->name('destroy');
+});
 
 // ─── Admin: Crafts CRUD ────────────────────────────────────────────────────
 Route::prefix('admin/crafts')->name('admin.crafts.')->middleware('auth')->group(function () {

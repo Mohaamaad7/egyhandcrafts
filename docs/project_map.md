@@ -606,3 +606,82 @@
 
 **Docs:** `docs/tasks/craftsmen-stories-media-and-ui-fix.md`
 
+
+### 2026-09-06 — Admin Panel, Authentication & User Management Overhaul
+
+**Task/Instruction:** Complete architectural overhaul of the administrative interface and login workflow based on comprehensive video audit findings:
+1. **Dual-Identity Authentication (`/login`):** Support logging in using either Email Address OR Username seamlessly.
+2. **Clean Form Inputs & RTL Alignment:** Eliminate hardcoded placeholders (`admin@sadat.test`), align "تذكرني" (Remember Me) in proper RTL flow with Tabler RTL CSS, and integrate password visibility toggle.
+3. **Password Recovery Access:** Activate Fortify password reset workflow with prestigious academic views (`/forgot-password`, `/reset-password`).
+4. **True RTL Admin Panel Layout (`/admin`):** Dock vertical sidebar to the right edge with Tabler RTL (`tabler.rtl.min.css`), incorporate Google Fonts `Cairo` and `Tajawal`, and style active navigation states with gold accents.
+5. **Top Navigation Bar (Header) Enhancements:** Add "Visit Portal" preview link button (WordPress Admin Bar style) and a polished User Profile dropdown with initials avatar, admin role badge, profile/password settings link, and secure CSRF logout.
+6. **Command Center Dashboard:** Transform empty `/admin` page into a dynamic dashboard with live metrics (crafts, workshops, stories, admins), quick-action shortcuts, and recent activity logs.
+7. **Administrator & Credential Management:** Full administrative CRUD (`/admin/users`) with role assignment (`super_admin` / `admin`), password reset capabilities, and self-service personal profile and password management (`/admin/profile`).
+
+**Action Taken:**
+- **Database & Model:**
+  - Created migration `2026_09_06_140000_add_username_and_role_to_users_table.php` adding `username` (unique, nullable) and `role` (default 'admin') to `users` table. Migrated successfully.
+  - Updated `app/Models/User.php` with fillable attributes, `role_label` accessor, `initials` avatar accessor, and `isSuperAdmin()` helper.
+  - Updated `database/seeders/AdminUserSeeder.php` with `username => 'admin'` and `role => 'super_admin'`.
+  - Updated `database/factories/UserFactory.php` with unique `username` and default `role`.
+- **Authentication & Fortify Configuration:**
+  - Enabled `Features::resetPasswords()` in `config/fortify.php`.
+  - In `app/Providers/AppServiceProvider.php`:
+    - Implemented dual-identity resolution in `Fortify::authenticateUsing(function ($request) { ... })` checking `email` OR `username` with `Hash::check`.
+    - Registered `Fortify::requestPasswordResetLinkView` and `Fortify::resetPasswordView`.
+    - Registered `Fortify::resetUserPasswordsUsing` with 8+ char confirmation validation and password hashing.
+    - Updated `RateLimiter::for('login')` to key by transliterated dual-identity identifier + IP.
+- **Views & UI Overhaul:**
+  - Redesigned `resources/views/auth/login.blade.php`: Tabler RTL, university logos header, clean inputs with no prefilled values, flexbox RTL "تذكرني" checkbox, password recovery link, show/hide password toggle, and back to portal CTA.
+  - Created `resources/views/auth/forgot-password.blade.php` and `resources/views/auth/reset-password.blade.php` matching academic heritage aesthetic.
+  - Overhauled `resources/views/admin/layout.blade.php`: Switched to `tabler.rtl.min.css`, added `Cairo` & `Tajawal` typography, fixed sidebar to right edge (`right: 0 !important; border-left: 1px solid...`), added header "معاينة البوابة" external link button, header user profile dropdown with role badge & navigation, and added "فريق العمل والمسؤولين" sidebar link.
+  - Rewrote `resources/views/admin/dashboard.blade.php`: Dynamic KPI metric cards (crafts count with cover image stats, workshops count with active & worker totals, stories count with audio/video breakdown, admin team count), quick-action shortcuts bar, recent workshops and stories tables, and fieldwork completeness widget.
+- **Controllers & Routing:**
+  - Created `app/Http/Controllers/Admin/DashboardController.php` with live metric queries and recent activity feeds.
+  - Created `app/Http/Middleware/EnsureSuperAdmin.php` restricting `/admin/users` strictly to `super_admin` (403 Forbidden for regular admins).
+  - Created `app/Http/Controllers/Admin/UserController.php` with full CRUD, search, role filtering, `Rule::unique()->ignore()`, and deletion safeguards.
+  - Created `app/Http/Controllers/Admin/ProfileController.php` with personal profile editing (`Rule::unique()->ignore()`) and password update with `current_password` validation.
+  - Added mail transport exception fallback in `bootstrap/app.php` for `/forgot-password` submissions.
+  - Updated `routes/web.php` mapping `/admin` to `DashboardController@index`, `/admin/profile` to `ProfileController`, and `/admin/users` to `UserController` protected by `['auth', EnsureSuperAdmin::class]`.
+- **Testing & Verification:**
+  - Updated `tests/Feature/AdminAuthenticationTest.php` with email and username login, clean placeholder check, and password reset submission verification (10 tests, 44 assertions).
+  - Created `tests/Feature/AdminUserManagementTest.php` with 9 feature tests covering RBAC 403 checks, listing, creation, uniqueness ignore, password override, self-delete prevention, and last-admin safeguard (35 assertions).
+  - Created `tests/Feature/AdminProfileTest.php` with 6 feature tests covering profile viewing, information updating, unchanged username/email save verification, password change, and current password validation (19 assertions).
+  - Created `tests/Feature/AdminDashboardTest.php` testing live KPI metrics and quick action links (13 assertions).
+  - Executed full test suite: **87 passed (280 assertions), 100% success rate**.
+  - Executed `npm run build`: Vite compiled cleanly in 11.37s.
+
+**Files Created:**
+- `database/migrations/2026_09_06_140000_add_username_and_role_to_users_table.php`
+- `app/Http/Controllers/Admin/DashboardController.php`
+- `app/Http/Controllers/Admin/UserController.php`
+- `app/Http/Controllers/Admin/ProfileController.php`
+- `resources/views/auth/forgot-password.blade.php`
+- `resources/views/auth/reset-password.blade.php`
+- `resources/views/admin/users/index.blade.php`
+- `resources/views/admin/users/create.blade.php`
+- `resources/views/admin/users/edit.blade.php`
+- `resources/views/admin/profile/edit.blade.php`
+- `tests/Feature/AdminUserManagementTest.php`
+- `tests/Feature/AdminProfileTest.php`
+- `tests/Feature/AdminDashboardTest.php`
+- `docs/tasks/admin-panel-and-auth-overhaul.md`
+
+**Files Modified:**
+- `app/Models/User.php`
+- `database/seeders/AdminUserSeeder.php`
+- `database/factories/UserFactory.php`
+- `config/fortify.php`
+- `app/Providers/AppServiceProvider.php`
+- `resources/views/auth/login.blade.php`
+- `resources/views/admin/layout.blade.php`
+- `resources/views/admin/dashboard.blade.php`
+- `routes/web.php`
+- `tests/Feature/AdminAuthenticationTest.php`
+- `docs/project_map.md`
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/admin-panel-and-auth-overhaul.md`
+
+

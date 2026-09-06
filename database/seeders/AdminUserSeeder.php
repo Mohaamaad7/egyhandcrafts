@@ -19,6 +19,8 @@ class AdminUserSeeder extends Seeder
             ['email' => 'admin@sadat.test'],
             [
                 'name' => 'Administrator',
+                'username' => 'admin',
+                'role' => 'super_admin',
                 'password' => 'password',
                 'email_verified_at' => now(),
             ],

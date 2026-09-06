@@ -162,9 +162,7 @@ return [
     */
 
     'features' => [
-        // Only session-based login/logout is needed for the single admin user.
-        // Registration, password reset, email verification, profile updates,
-        // two-factor authentication, and passkeys are intentionally disabled.
+        Features::resetPasswords(),
     ],
 
 ];

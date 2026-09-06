@@ -15,5 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo('/admin');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
+            if ($request->is('forgot-password') && ! ($e instanceof \Illuminate\Validation\ValidationException) && ! ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface)) {
+                return back()->with('status', 'تم استلام طلبك. نظراً لعدم ربط خادم البريد في بيئة العمل الحالية، يُرجى مراجعة مدير النظام لإعادة تعيين كلمة المرور يدوياً.');
+            }
+        });
     })->create();
