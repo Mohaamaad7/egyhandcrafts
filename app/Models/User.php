@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'username', 'email', 'role', 'password'])]
+#[Fillable(['name', 'job_title', 'username', 'email', 'role', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -39,13 +39,17 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the Arabic human-readable role name.
+     * Get the Arabic human-readable role/job title.
      */
     public function getRoleLabelAttribute(): string
     {
+        if (! empty($this->job_title)) {
+            return $this->job_title;
+        }
+
         return match ($this->role) {
             'super_admin' => 'مدير النظام',
-            default => 'مسؤول توثيق',
+            default => 'مسؤول نظام',
         };
     }
 

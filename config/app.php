@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Panel Route Prefix
+    |--------------------------------------------------------------------------
+    |
+    | Defines the URL prefix for accessing the administrative control panel.
+    | Can be configured via environment or overridden dynamically by database setting.
+    |
+    */
+
+    'admin_path' => env('ADMIN_PATH', 'admin'),
+
 ];

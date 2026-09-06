@@ -148,6 +148,12 @@
             color: #ffffff;
             border: 2px solid rgba(212, 175, 55, 0.4);
         }
+
+        /* User Profile Dropdown RTL Viewport Overflow Guard */
+        .dropdown-menu-end[data-bs-popper] {
+            right: auto !important;
+            left: 0 !important;
+        }
     </style>
 
     @stack('styles')
@@ -221,14 +227,6 @@
                                 </li>
                             @endif
                         </ul>
-
-                        {{-- Sidebar Footer with Quick Site Link --}}
-                        <div class="mt-auto p-3 w-100 border-top border-dark-subtle">
-                            <a href="{{ route('home') }}" target="_blank" class="btn btn-outline-light btn-sm w-100 d-flex align-items-center justify-content-center gap-2">
-                                <i class="ti ti-external-link"></i>
-                                <span>معاينة البوابة العامة</span>
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -254,7 +252,7 @@
                         <a href="{{ route('home') }}"
                            target="_blank"
                            class="btn btn-visit-portal btn-sm d-flex align-items-center gap-2 shadow-sm rounded-pill px-3 py-1"
-                           title="معاينة البوابة العامة للمشروع في نافذة جديدة">
+                           title="معاينة البوابة في نافذة جديدة">
                             <i class="ti ti-world fs-2 text-primary"></i>
                             <span class="d-none d-sm-inline fw-medium">معاينة البوابة</span>
                             <i class="ti ti-arrow-up-left small text-secondary"></i>
@@ -276,7 +274,7 @@
                                     <i class="ti ti-chevron-down text-secondary ms-1 fs-3"></i>
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-start dropdown-menu-arrow shadow-md border-0 rounded-3 text-end" style="min-width: 240px;">
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow shadow-md border-0 rounded-3 text-end" style="min-width: 240px;">
                                     {{-- User Info Header --}}
                                     <div class="dropdown-header text-end bg-light-subtle py-2 px-3 border-bottom">
                                         <div class="fw-bold text-dark">{{ auth()->user()->name }}</div>
@@ -296,13 +294,6 @@
                                             <span>إدارة فريق المسؤولين</span>
                                         </a>
                                     @endif
-
-                                    <div class="dropdown-divider my-1"></div>
-
-                                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('home') }}" target="_blank">
-                                        <i class="ti ti-external-link text-secondary fs-2"></i>
-                                        <span>زيارة البوابة العامة</span>
-                                    </a>
 
                                     <div class="dropdown-divider my-1"></div>
 

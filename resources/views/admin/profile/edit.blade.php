@@ -43,6 +43,20 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label" for="job_title">المسمى الوظيفي / الأكاديمي (اختياري)</label>
+                        <input type="text"
+                               name="job_title"
+                               id="job_title"
+                               class="form-control @error('job_title') is-invalid @enderror"
+                               value="{{ old('job_title', $user->job_title) }}"
+                               placeholder="مثال: باحث توثيق تراثي / مدير المشروع">
+                        <small class="form-hint">يظهر هذا المسمى بجوار اسمك في الترويسة وشارات الحساب.</small>
+                        @error('job_title')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label required" for="username">اسم المستخدم (Username)</label>
                         <div class="input-group">
                             <span class="input-group-text">@</span>
@@ -144,5 +158,80 @@
             </div>
         </div>
     </div>
+
+    {{-- Third Card (Super Admin Only): Dynamic Admin Route Prefix Configuration --}}
+    @if ($user->isSuperAdmin())
+        <div class="col-12">
+            <div class="card shadow-xs border-0 border-start border-primary border-3">
+                <div class="card-header py-3 d-flex align-items-center justify-content-between bg-light-subtle">
+                    <div>
+                        <h3 class="card-title fw-bold text-primary mb-0 d-flex align-items-center gap-2">
+                            <i class="ti ti-route text-primary fs-2"></i>
+                            <span>مسار لوحة التحكم المخصص (Admin Route Prefix)</span>
+                        </h3>
+                        <div class="text-secondary small mt-1">تعديل رابط الدخول إلى لوحة الإدارة لتحسين الأمان والحماية ضد محاولات المسح العشوائي.</div>
+                    </div>
+                    <span class="badge bg-purple-lt fw-bold">خاص بمدير النظام</span>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="row align-items-center mb-4 g-3">
+                        <div class="col-md-7">
+                            <div class="alert alert-info d-flex align-items-start gap-2 mb-0" role="alert">
+                                <i class="ti ti-info-circle fs-2 mt-1"></i>
+                                <div>
+                                    <div class="fw-bold mb-1">تنبيه أمني هام:</div>
+                                    <div class="small">
+                                        عند تغيير مسار لوحة التحكم، سيتم نقل جميع روابط الإدارة فوراً إلى المسار الجديد، وسيعود المسار القديم برمز خطأ <code>404 Not Found</code> لحجب لوحة التحكم عن الزوار غير المصرح لهم.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="p-3 bg-light rounded-3 border text-center">
+                                <div class="text-secondary small mb-1">المسار الإداري النشط حالياً:</div>
+                                <code class="fs-3 fw-bold text-primary dir-ltr d-block">{{ url($currentAdminPath ?? admin_path()) }}</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('admin.profile.settings') }}" method="POST" autocomplete="off">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-8">
+                                <label class="form-label required" for="admin_path">مسار لوحة التحكم الجديد (Prefix)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text dir-ltr bg-light-subtle text-secondary">{{ url('/') }}/</span>
+                                    <input type="text"
+                                           name="admin_path"
+                                           id="admin_path"
+                                           class="form-control dir-ltr text-start fw-bold @error('admin_path') is-invalid @enderror"
+                                           value="{{ old('admin_path', $currentAdminPath ?? admin_path()) }}"
+                                           placeholder="admin"
+                                           pattern="[a-zA-Z0-9_\-]+"
+                                           minlength="2"
+                                           maxlength="50"
+                                           required>
+                                </div>
+                                <small class="form-hint">أحرف إنجليزية وأرقام وشرطات فقط بدون مسافات (مثال: <code>secret-portal</code> أو <code>cp</code>).</small>
+                                @error('admin_path')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100 d-inline-flex align-items-center justify-content-center gap-2">
+                                    <i class="ti ti-device-floppy"></i>
+                                    <span>تحديث وتفعيل المسار فوراً</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 @endsection

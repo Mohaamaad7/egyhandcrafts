@@ -793,5 +793,69 @@
 **Status:** ✅ Success
 
 
+### 2026-09-06 — Dynamic Admin Path, Custom Job Titles, RTL Header Overflow Fix & UX Refinements
 
+**Task/Instruction:** Address 5 specific UX, architectural, and administrative adjustments following production review on `egyhandcrafts.com/admin/profile`:
+1. **Dynamic / Configurable Admin Path:** Decouple hardcoded `/admin` prefix across `routes/web.php` and Fortify redirects, store in cached `settings` table with fallback to `config('app.admin_path', env('ADMIN_PATH', 'admin'))`, allow Super Admin to update safely from profile screen, and ensure old `/admin` returns HTTP 404 when custom prefix is active.
+2. **Custom Job Title / Role Title:** Add nullable `job_title` column to `users`, eliminate hardcoded "مسؤول توثيق" string from accessors/badges, render dynamic titles across layout and profile screen, and allow self-service and administrative editing.
+3. **Header User Dropdown RTL Overflow Fix:** Fix alignment of user avatar dropdown in `resources/views/admin/layout.blade.php` to open inward (`dropdown-menu-end`) so contents never clip off viewport's left boundary.
+4. **Deduplicate "Visit Portal / معاينة البوابة" Links:** Keep strictly the top navbar button ("معاينة البوابة"); remove duplicate "معاينة البوابة العامة" button from sidebar footer and duplicate "زيارة البوابة العامة" item from user dropdown menu.
+5. **Multi-Admin Management (Simple Team CRUD):** Support `job_title` in user creation and editing forms, clean role select options, enable regular admins to log in and manage content (crafts, workshops, stories), and enforce deletion safeguards protecting the primary super admin account (ID 1 or username `admin`).
+6. **Two-Tier Documentation & Verification:** Create exhaustive markdown task file in `docs/tasks/` and append log entry in `docs/project_map.md`; verify all tests pass 100% and assets compile cleanly.
 
+**Action Taken:**
+- **Database & Architecture:**
+  - Created migration `2026_09_06_170000_create_settings_table.php` (`key`, `value`) with unique index.
+  - Created migration `2026_09_06_171000_add_job_title_to_users_table.php` adding nullable `job_title` to `users`.
+  - Created `app/Models/Setting.php` with `get()`, `set()`, and `remove()` methods leveraging `Cache::rememberForever` and graceful unmigrated fallbacks.
+  - Created `app/helpers.php` defining `admin_path(): string` helper; registered in `composer.json` files autoload and explicitly required in `bootstrap/app.php`.
+  - Updated `app/Models/User.php`: added `job_title` to fillable and updated `role_label` accessor to prioritize custom `job_title` over default role label, eliminating hardcoded "مسؤول توثيق".
+  - Updated `database/seeders/AdminUserSeeder.php` and `database/factories/UserFactory.php` with `job_title`.
+- **Dynamic Routing & Redirects:**
+  - Updated `routes/web.php` wrapping all administrative routes in dynamic prefix `$adminPrefix = admin_path()`; added `PUT /profile/settings` route for admin prefix updates.
+  - Updated `bootstrap/app.php` with `$middleware->redirectUsersTo(fn () => '/' . admin_path())`.
+  - Updated `config/app.php` with `'admin_path' => env('ADMIN_PATH', 'admin')`.
+  - Updated `config/fortify.php` and `app/Providers/AppServiceProvider.php` setting `fortify.home` dynamically.
+- **Controllers & RBAC Logic:**
+  - Updated `app/Http/Controllers/Admin/ProfileController.php`: added `job_title` updates, added `updateAdminPath()` with super admin authorization, regex validation, reserved path collision prevention, and immediate redirect to new path.
+  - Updated `app/Http/Controllers/Admin/UserController.php`: added `job_title` to validation and persistence in `store()` and `update()`, updated user search to query `job_title`, and added deletion safeguard protecting primary super admin account (`$user->id === 1 || $user->username === 'admin'`).
+- **User Interface & RTL Refinements:**
+  - In `resources/views/admin/layout.blade.php`: switched dropdown class from `dropdown-menu-start` to `dropdown-menu-end`, added RTL guard CSS, removed duplicate sidebar footer button, and removed duplicate dropdown link.
+  - In `resources/views/admin/profile/edit.blade.php`: added `job_title` input field and added dynamic admin path settings card for super admin with active path indicator and immediate save action.
+  - In `resources/views/admin/users/create.blade.php` and `edit.blade.php`: added `job_title` input and standardized role options.
+  - In `resources/views/admin/users/index.blade.php`: rendered `job_title` under user names, updated dynamic role badges, and protected primary super admin from displaying delete modal button.
+- **Testing & Verification:**
+  - Created `tests/Feature/AdminPathAndUxRefinementsTest.php` with 13 comprehensive feature tests (44 assertions) testing path resolution, 404 on old prefix, authorization, reserved names, job titles, RTL dropdown alignment, and link deduplication.
+  - Executed full test suite: **121 passed (416 assertions), 100% success rate**.
+  - Executed `npm run build`: Vite compiled cleanly in 7.03s.
+
+**Files Created:**
+- `database/migrations/2026_09_06_170000_create_settings_table.php`
+- `database/migrations/2026_09_06_171000_add_job_title_to_users_table.php`
+- `app/Models/Setting.php`
+- `app/helpers.php`
+- `tests/Feature/AdminPathAndUxRefinementsTest.php`
+- `docs/tasks/admin-path-and-ux-refinements.md`
+
+**Files Modified:**
+- `app/Http/Controllers/Admin/ProfileController.php`
+- `app/Http/Controllers/Admin/UserController.php`
+- `app/Models/User.php`
+- `app/Providers/AppServiceProvider.php`
+- `bootstrap/app.php`
+- `composer.json`
+- `config/app.php`
+- `config/fortify.php`
+- `database/factories/UserFactory.php`
+- `database/seeders/AdminUserSeeder.php`
+- `resources/views/admin/layout.blade.php`
+- `resources/views/admin/profile/edit.blade.php`
+- `resources/views/admin/users/create.blade.php`
+- `resources/views/admin/users/edit.blade.php`
+- `resources/views/admin/users/index.blade.php`
+- `routes/web.php`
+- `docs/project_map.md`
+
+**Status:** ✅ Success
+
+**Docs:** `docs/tasks/admin-path-and-ux-refinements.md`

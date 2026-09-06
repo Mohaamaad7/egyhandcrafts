@@ -7,7 +7,7 @@
 <div class="row g-3 mb-4 align-items-center justify-content-between">
     <div class="col-auto">
         <h2 class="page-title text-primary h3 mb-0">حسابات الإدارة والمشرفين</h2>
-        <div class="text-secondary small mt-1">إدارة الصلاحيات وحسابات الدخول لفريق التوثيق الميداني</div>
+        <div class="text-secondary small mt-1">إدارة الصلاحيات وحسابات الدخول لفريق العمل والتوثيق الميداني</div>
     </div>
     <div class="col-auto">
         <a href="{{ route('admin.users.create') }}" class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-xs">
@@ -23,14 +23,14 @@
             <div class="col-md-5">
                 <div class="input-icon">
                     <span class="input-icon-addon"><i class="ti ti-search text-secondary"></i></span>
-                    <input type="text" name="q" value="{{ request('q') }}" class="form-control form-control-sm" placeholder="ابحث بالاسم أو اسم المستخدم أو البريد...">
+                    <input type="text" name="q" value="{{ request('q') }}" class="form-control form-control-sm" placeholder="ابحث بالاسم أو المسمى أو اسم المستخدم أو البريد...">
                 </div>
             </div>
             <div class="col-md-4">
                 <select name="role" class="form-select form-select-sm">
                     <option value="">جميع الصلاحيات والأدوار</option>
                     <option value="super_admin" {{ request('role') === 'super_admin' ? 'selected' : '' }}>مدير النظام (Super Admin)</option>
-                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>مسؤول توثيق (Admin)</option>
+                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>مسؤول نظام (Admin)</option>
                 </select>
             </div>
             <div class="col-md-3 d-flex gap-2">
@@ -46,7 +46,7 @@
         <table class="table table-vcenter card-table table-hover">
             <thead>
                 <tr>
-                    <th>المسؤول</th>
+                    <th>المسؤول والمسمى</th>
                     <th>اسم المستخدم</th>
                     <th>البريد الإلكتروني</th>
                     <th>الصلاحية</th>
@@ -64,6 +64,9 @@
                                 </span>
                                 <div>
                                     <div class="fw-bold text-dark">{{ $user->name }}</div>
+                                    @if ($user->job_title)
+                                        <div class="text-secondary small">{{ $user->job_title }}</div>
+                                    @endif
                                     @if ($user->id === auth()->id())
                                         <span class="badge bg-green-lt py-0 px-1" style="font-size: 0.7rem;">حسابك الحالي</span>
                                     @endif
@@ -81,7 +84,7 @@
                                 </span>
                             @else
                                 <span class="badge bg-blue-lt">
-                                    <i class="ti ti-user me-1"></i> مسؤول توثيق
+                                    <i class="ti ti-user me-1"></i> {{ $user->job_title ?: 'مسؤول نظام' }}
                                 </span>
                             @endif
                         </td>
@@ -92,7 +95,7 @@
                                     <i class="ti ti-edit"></i>
                                 </a>
 
-                                @if ($user->id !== auth()->id())
+                                @if ($user->id !== auth()->id() && $user->id !== 1 && $user->username !== 'admin')
                                     <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal{{ $user->id }}" title="حذف المسؤول">
                                         <i class="ti ti-trash"></i>
                                     </button>
@@ -100,7 +103,7 @@
                             </div>
 
                             {{-- Delete Confirmation Modal --}}
-                            @if ($user->id !== auth()->id())
+                            @if ($user->id !== auth()->id() && $user->id !== 1 && $user->username !== 'admin')
                                 <div class="modal fade text-start" id="deleteUserModal{{ $user->id }}" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog modal-sm modal-dialog-centered">
                                         <div class="modal-content">

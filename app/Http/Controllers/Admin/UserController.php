@@ -23,6 +23,7 @@ class UserController extends Controller
             $search = $request->input('q');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('job_title', 'like', "%{$search}%")
                   ->orWhere('username', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%");
             });
@@ -52,6 +53,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'job_title' => ['nullable', 'string', 'max:255'],
             'username' => ['required', 'string', 'alpha_dash', 'max:50', 'unique:users,username'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'role' => ['required', 'in:admin,super_admin'],
@@ -65,6 +67,7 @@ class UserController extends Controller
 
         User::create([
             'name' => $validated['name'],
+            'job_title' => !empty($validated['job_title']) ? trim($validated['job_title']) : null,
             'username' => strtolower($validated['username']),
             'email' => strtolower($validated['email']),
             'role' => $validated['role'],
@@ -91,6 +94,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'job_title' => ['nullable', 'string', 'max:255'],
             'username' => ['required', 'string', 'alpha_dash', 'max:50', Rule::unique('users', 'username')->ignore($user->id)],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'role' => ['required', 'in:admin,super_admin'],
@@ -110,6 +114,7 @@ class UserController extends Controller
         }
 
         $user->name = $validated['name'];
+        $user->job_title = !empty($validated['job_title']) ? trim($validated['job_title']) : null;
         $user->username = strtolower($validated['username']);
         $user->email = strtolower($validated['email']);
         $user->role = $validated['role'];
@@ -134,7 +139,12 @@ class UserController extends Controller
             return back()->with('error', 'لا يمكنك حذف حسابك الشخصي النشط.');
         }
 
-        // Safeguard 2: Cannot delete the last remaining super_admin
+        // Safeguard 2: Primary super admin account (ID 1 or username 'admin') cannot be deleted
+        if ($user->id === 1 || $user->username === 'admin') {
+            return back()->with('error', 'لا يمكن حذف الحساب الإداري الرئيسي للمنظومة.');
+        }
+
+        // Safeguard 3: Cannot delete the last remaining super_admin
         if ($user->role === 'super_admin' && User::where('role', 'super_admin')->count() <= 1) {
             return back()->with('error', 'لا يمكن حذف مدير النظام الوحيد المتبقي.');
         }

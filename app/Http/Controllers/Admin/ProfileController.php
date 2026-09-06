@@ -3,27 +3,28 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
 {
     /**
-     * Show the profile and credential management page for the active administrator.
+     * Show the profile, credential, and system path management page.
      */
     public function edit(): View
     {
         $user = auth()->user();
+        $currentAdminPath = admin_path();
 
-        return view('admin.profile.edit', compact('user'));
+        return view('admin.profile.edit', compact('user', 'currentAdminPath'));
     }
 
     /**
-     * Update the active administrator's profile information.
+     * Update the active administrator's profile information and job title.
      */
     public function update(Request $request): RedirectResponse
     {
@@ -31,6 +32,7 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'job_title' => ['nullable', 'string', 'max:255'],
             'username' => ['required', 'string', 'alpha_dash', 'max:50', Rule::unique('users', 'username')->ignore($user->id)],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
         ], [
@@ -40,11 +42,12 @@ class ProfileController extends Controller
 
         $user->update([
             'name' => $validated['name'],
+            'job_title' => !empty($validated['job_title']) ? trim($validated['job_title']) : null,
             'username' => strtolower($validated['username']),
             'email' => strtolower($validated['email']),
         ]);
 
-        return back()->with('success', 'تم تحديث البيانات الشخصية بنجاح.');
+        return back()->with('success', 'تم تحديث البيانات الشخصية والمسمى الوظيفي بنجاح.');
     }
 
     /**
@@ -68,5 +71,39 @@ class ProfileController extends Controller
         ]);
 
         return back()->with('success', 'تم تحديث كلمة المرور بنجاح.');
+    }
+
+    /**
+     * Safely update the administrative route prefix.
+     */
+    public function updateAdminPath(Request $request): RedirectResponse
+    {
+        if (! auth()->user()?->isSuperAdmin()) {
+            abort(403, 'تعديل مسار لوحة التحكم مقتصر على مدير النظام فقط.');
+        }
+
+        $validated = $request->validate([
+            'admin_path' => [
+                'required',
+                'string',
+                'min:2',
+                'max:50',
+                'regex:/^[a-zA-Z0-9_\-]+$/',
+                'not_in:login,logout,register,forgot-password,reset-password,api,sanctum,up,storage,assets,crafts,workshops,stories,map,home',
+            ],
+        ], [
+            'admin_path.required' => 'يرجى إدخال مسار لوحة التحكم الجديد.',
+            'admin_path.min' => 'يجب ألا يقل المسار عن حرفين.',
+            'admin_path.max' => 'يجب ألا يزيد المسار عن 50 حرفاً.',
+            'admin_path.regex' => 'يجب أن يحتوي المسار على أحرف إنجليزية وأرقام وشرطات فقط بدون مسافات أو رموز خاصة.',
+            'admin_path.not_in' => 'هذا المسار محجوز لمسارات البوابة العامة ولا يمكن استخدامه كمسار للإدارة.',
+        ]);
+
+        $newPath = strtolower(trim($validated['admin_path'], '/'));
+
+        Setting::set('admin_path', $newPath);
+
+        return redirect('/' . $newPath . '/profile')
+            ->with('success', "تم تحديث مسار لوحة التحكم بنجاح إلى: (/{$newPath}). تم تفعيل المسار فوراً.");
     }
 }

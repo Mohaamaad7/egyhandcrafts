@@ -59,6 +59,21 @@
                         </div>
 
                         <div class="col-md-6">
+                            <label class="form-label" for="job_title">المسمى الوظيفي / الأكاديمي (اختياري)</label>
+                            <input type="text"
+                                   name="job_title"
+                                   id="job_title"
+                                   class="form-control @error('job_title') is-invalid @enderror"
+                                   value="{{ old('job_title', $user->job_title) }}"
+                                   placeholder="مثال: باحث توثيق ميداني / مسؤول إعلامي">
+                            @error('job_title')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
                             <label class="form-label required" for="username">اسم المستخدم (Username)</label>
                             <div class="input-group">
                                 <span class="input-group-text">@</span>
@@ -73,10 +88,8 @@
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div>
 
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                             <label class="form-label required" for="email">البريد الإلكتروني</label>
                             <input type="email"
                                    name="email"
@@ -88,12 +101,14 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                    </div>
 
-                        <div class="col-md-5">
-                            <label class="form-label required" for="role">الصلاحية والدور</label>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-12">
+                            <label class="form-label required" for="role">الصلاحية والدور في النظام</label>
                             <select name="role" id="role" class="form-select @error('role') is-invalid @enderror" required>
-                                <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>مسؤول توثيق (Admin)</option>
-                                <option value="super_admin" {{ old('role', $user->role) === 'super_admin' ? 'selected' : '' }}>مدير النظام (Super Admin)</option>
+                                <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>مسؤول نظام (Admin) — إدارة الحرف والورش والقصص</option>
+                                <option value="super_admin" {{ old('role', $user->role) === 'super_admin' ? 'selected' : '' }}>مدير النظام (Super Admin) — صلاحية كاملة تشمل إدارة المستخدمين وإعدادات المسار</option>
                             </select>
                             @error('role')
                                 <div class="invalid-feedback">{{ $message }}</div>

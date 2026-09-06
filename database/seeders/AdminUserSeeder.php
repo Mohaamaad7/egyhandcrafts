@@ -25,6 +25,7 @@ class AdminUserSeeder extends Seeder
             ['email' => 'admin@sadat.test'],
             [
                 'name' => 'Administrator',
+                'job_title' => 'مدير النظام والمشرف العام',
                 'username' => 'admin',
                 'role' => 'super_admin',
                 'password' => 'password',
