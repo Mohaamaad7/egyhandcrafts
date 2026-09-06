@@ -208,3 +208,11 @@ Users previously had to submit user creation and password edit forms before rece
 - **Dynamic Error Suppression:** Stale server-side error banners (`.alert-danger`) and static error texts are dismissed immediately once the user starts making corrections.
 - **Client-Side Submit Interceptor:** Forms configured with `novalidate` intercept submission when any required field or credentials check fails, highlighting and focusing the offending element without unnecessary server roundtrips.
 
+### 7. Real-Time Uniqueness Verification (AJAX Availability Check)
+- **Problem Resolved:** The regex test previously produced false-positive `is-valid` green checkmarks for usernames already present in the database, and email fields had no real-time duplicate warning.
+- **Endpoint Added:** `POST /admin/check-availability` in `AdminUserController::checkAvailability` supporting `username` and `email` checking with `ignore_id` for editing existing records.
+- **Debounced Interaction:** In `resources/views/admin/layout.blade.php`, user input triggers a 300ms–350ms debounced asynchronous verification.
+- **State Transition:** Format validation passes into a pending loading indicator (`جاري التحقق من التوفر...`), and only marks `is-valid` once the database confirms uniqueness. If duplicate, immediate `is-invalid` (red border and specific warning message) is rendered.
+- **Submit Guard:** In-flight or unresolved checks are awaited before form submission, completely preventing duplicate record submissions on the client side.
+
+

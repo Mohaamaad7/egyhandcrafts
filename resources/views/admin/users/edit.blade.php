@@ -40,7 +40,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.users.update', $user) }}" method="POST" autocomplete="off" novalidate>
+                <form action="{{ route('admin.users.update', $user) }}" method="POST" autocomplete="off" novalidate data-user-id="{{ $user->id }}">
                     @csrf
                     @method('PUT')
 
@@ -98,8 +98,9 @@
                                    class="form-control dir-ltr text-end @error('email') is-invalid @enderror"
                                    value="{{ old('email', $user->email) }}"
                                    required>
+                            <div id="email-live-msg" class="small mt-1" style="display: none;"></div>
                             @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback server-error d-block">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>

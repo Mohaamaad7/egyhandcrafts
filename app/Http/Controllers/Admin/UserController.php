@@ -154,4 +154,90 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')
             ->with('success', 'تم حذف حساب المسؤول بنجاح.');
     }
+
+    /**
+     * Real-time availability check for username and email uniqueness.
+     */
+    public function checkAvailability(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $request->validate([
+            'field' => ['required', 'in:username,email'],
+            'value' => ['required', 'string'],
+            'ignore_id' => ['nullable', 'integer'],
+        ]);
+
+        $field = $request->input('field');
+        $value = trim($request->input('value'));
+        $ignoreId = $request->input('ignore_id');
+
+        if ($field === 'username') {
+            $value = strtolower($value);
+
+            if (! preg_match('/^[a-zA-Z0-9_-]+$/', $value)) {
+                return response()->json([
+                    'available' => false,
+                    'message' => 'اسم المستخدم يجب أن يتكون من أحرف إنجليزية وأرقام وشرطة (_) فقط دون مسافات.',
+                ]);
+            }
+
+            if (strlen($value) > 50) {
+                return response()->json([
+                    'available' => false,
+                    'message' => 'اسم المستخدم لا يمكن أن يتجاوز 50 حرفاً.',
+                ]);
+            }
+
+            $exists = User::where('username', $value)
+                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'available' => false,
+                    'message' => 'اسم المستخدم هذا مستخدم بالفعل من قبل حساب آخر.',
+                ]);
+            }
+
+            return response()->json([
+                'available' => true,
+                'message' => 'اسم المستخدم متاح للاستخدام ✓',
+            ]);
+        }
+
+        if ($field === 'email') {
+            $value = strtolower($value);
+
+            if (! filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                return response()->json([
+                    'available' => false,
+                    'message' => 'يرجى إدخال بريد إلكتروني صحيح.',
+                ]);
+            }
+
+            if (strlen($value) > 255) {
+                return response()->json([
+                    'available' => false,
+                    'message' => 'البريد الإلكتروني طويل جداً.',
+                ]);
+            }
+
+            $exists = User::where('email', $value)
+                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'available' => false,
+                    'message' => 'البريد الإلكتروني هذا مستخدم بالفعل من قبل حساب آخر.',
+                ]);
+            }
+
+            return response()->json([
+                'available' => true,
+                'message' => 'البريد الإلكتروني متاح للاستخدام ✓',
+            ]);
+        }
+
+        return response()->json(['available' => false, 'message' => 'حقل غير مدعوم.'], 400);
+    }
 }

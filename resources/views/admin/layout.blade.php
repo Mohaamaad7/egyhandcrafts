@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="admin-check-availability-url" content="{{ route('admin.check-availability') }}">
     <title>@yield('title', 'لوحة التحكم') | {{ config('app.name') }}</title>
 
     {{-- Google Fonts: Cairo & Tajawal --}}
@@ -384,6 +385,9 @@
     {{-- Instant Live Validation & Password Visibility Toggle Script --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const checkUrl = document.querySelector('meta[name="admin-check-availability-url"]')?.getAttribute('content');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
             // 1. Password Visibility Toggle
             document.querySelectorAll('.toggle-password-btn').forEach(function (btn) {
                 btn.addEventListener('click', function (e) {
@@ -419,6 +423,12 @@
             function showSuccess(container, text) {
                 if (!container) return;
                 container.innerHTML = '<span class="text-success d-inline-flex align-items-center gap-1"><i class="ti ti-circle-check"></i> <span>' + text + '</span></span>';
+                container.style.display = 'block';
+            }
+
+            function showPending(container, text) {
+                if (!container) return;
+                container.innerHTML = '<span class="text-muted d-inline-flex align-items-center gap-1"><span class="spinner-border spinner-border-sm" role="status"></span> <span>' + text + '</span></span>';
                 container.style.display = 'block';
             }
 
@@ -460,19 +470,48 @@
                 }
             }
 
-            // 3. Bind all forms with credentials / password fields
+            // AJAX availability checker
+            async function checkRemoteAvailability(field, value, ignoreId) {
+                if (!checkUrl) return { available: true, message: '' };
+                try {
+                    const res = await fetch(checkUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ field: field, value: value, ignore_id: ignoreId })
+                    });
+                    const data = await res.json();
+                    return data;
+                } catch (e) {
+                    return { available: true, message: '' };
+                }
+            }
+
+            // 3. Bind all forms with credentials / user fields
             document.querySelectorAll('form').forEach(function (form) {
                 const passInput = form.querySelector('#password, #new_password');
                 const confirmInput = form.querySelector('#password_confirmation, #new_password_confirmation');
                 const userInput = form.querySelector('#username');
+                const emailInput = form.querySelector('#email');
 
                 const passMsg = form.querySelector('#password-live-msg, #new-password-live-msg');
                 const confirmMsg = form.querySelector('#password-confirm-live-msg, #new-password-confirm-live-msg');
                 const userMsg = form.querySelector('#username-live-msg');
+                const emailMsg = form.querySelector('#email-live-msg');
+
+                const userId = form.getAttribute('data-user-id') || null;
+
+                let userTimer = null;
+                let emailTimer = null;
+                let userStatus = null; // null | true | false | 'checking'
+                let emailStatus = null; // null | true | false | 'checking'
 
                 function hideServerErrors(input) {
                     if (!input) return;
-                    const parent = input.closest('.col-md-6, .mb-3, .col-md-12') || input.parentElement;
+                    const parent = input.closest('.col-md-6, .mb-3, .mb-4, .col-md-12') || input.parentElement;
                     if (parent) {
                         parent.querySelectorAll('.server-error').forEach(function (el) {
                             el.style.display = 'none';
@@ -547,6 +586,8 @@
                     const isRequired = userInput.hasAttribute('required');
 
                     if (val === '') {
+                        clearTimeout(userTimer);
+                        userStatus = null;
                         if (isSubmit && isRequired) {
                             setValidationState(userInput, false, userMsg, 'اسم المستخدم مطلوب.');
                             return false;
@@ -557,12 +598,117 @@
 
                     const alphaDashRegex = /^[a-zA-Z0-9_-]+$/;
                     if (!alphaDashRegex.test(val)) {
+                        clearTimeout(userTimer);
+                        userStatus = false;
                         setValidationState(userInput, false, userMsg, 'اسم المستخدم يجب أن يتكون من أحرف إنجليزية وأرقام وشرطة (_) فقط دون مسافات.');
                         return false;
-                    } else {
-                        setValidationState(userInput, true, userMsg, '');
-                        return true;
                     }
+
+                    if (val.length > 50) {
+                        clearTimeout(userTimer);
+                        userStatus = false;
+                        setValidationState(userInput, false, userMsg, 'اسم المستخدم لا يمكن أن يتجاوز 50 حرفاً.');
+                        return false;
+                    }
+
+                    // Format is valid -> DO NOT mark green yet! Check server availability with debounce
+                    if (isSubmit) {
+                        return userStatus !== false;
+                    }
+
+                    // Show pending check & debounce
+                    clearTimeout(userTimer);
+                    userInput.classList.remove('is-valid', 'is-invalid');
+                    const userGroup = userInput.closest('.input-group-flat, .input-group');
+                    if (userGroup) userGroup.classList.remove('is-valid', 'is-invalid');
+                    showPending(userMsg, 'جاري التحقق من توفر اسم المستخدم...');
+                    userStatus = 'checking';
+
+                    userTimer = setTimeout(async function () {
+                        const res = await checkRemoteAvailability('username', val, userId);
+                        if (userInput.value.trim() !== val) return; // Discard stale request
+                        if (res.available) {
+                            userStatus = true;
+                            setValidationState(userInput, true, userMsg, res.message || 'اسم المستخدم متاح للاستخدام ✓');
+                        } else {
+                            userStatus = false;
+                            setValidationState(userInput, false, userMsg, res.message || 'اسم المستخدم هذا مستخدم بالفعل من قبل حساب آخر.');
+                        }
+                    }, 300);
+
+                    return true;
+                }
+
+                function validateEmail(isSubmit) {
+                    if (!emailInput) return true;
+                    hideServerErrors(emailInput);
+                    const val = emailInput.value.trim();
+                    const isRequired = emailInput.hasAttribute('required');
+
+                    if (val === '') {
+                        clearTimeout(emailTimer);
+                        emailStatus = null;
+                        if (isSubmit && isRequired) {
+                            setValidationState(emailInput, false, emailMsg, 'البريد الإلكتروني مطلوب.');
+                            return false;
+                        }
+                        setValidationState(emailInput, null, emailMsg, '');
+                        return !isRequired;
+                    }
+
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(val)) {
+                        clearTimeout(emailTimer);
+                        emailStatus = false;
+                        if (isSubmit) {
+                            setValidationState(emailInput, false, emailMsg, 'يرجى إدخال بريد إلكتروني صحيح.');
+                            return false;
+                        }
+                        // While typing, if space exists
+                        if (/\s/.test(val)) {
+                            setValidationState(emailInput, false, emailMsg, 'البريد الإلكتروني لا يمكن أن يحتوي على مسافات.');
+                            return false;
+                        }
+                        clearMsg(emailMsg);
+                        emailInput.classList.remove('is-valid', 'is-invalid');
+                        const emailGroup = emailInput.closest('.input-group-flat, .input-group');
+                        if (emailGroup) emailGroup.classList.remove('is-valid', 'is-invalid');
+                        return false;
+                    }
+
+                    if (val.length > 255) {
+                        clearTimeout(emailTimer);
+                        emailStatus = false;
+                        setValidationState(emailInput, false, emailMsg, 'البريد الإلكتروني طويل جداً.');
+                        return false;
+                    }
+
+                    // Format is valid -> DO NOT mark green yet! Check server availability with debounce
+                    if (isSubmit) {
+                        return emailStatus !== false;
+                    }
+
+                    // Show pending check & debounce
+                    clearTimeout(emailTimer);
+                    emailInput.classList.remove('is-valid', 'is-invalid');
+                    const emailGroup = emailInput.closest('.input-group-flat, .input-group');
+                    if (emailGroup) emailGroup.classList.remove('is-valid', 'is-invalid');
+                    showPending(emailMsg, 'جاري التحقق من توفر البريد الإلكتروني...');
+                    emailStatus = 'checking';
+
+                    emailTimer = setTimeout(async function () {
+                        const res = await checkRemoteAvailability('email', val, userId);
+                        if (emailInput.value.trim() !== val) return; // Discard stale request
+                        if (res.available) {
+                            emailStatus = true;
+                            setValidationState(emailInput, true, emailMsg, res.message || 'البريد الإلكتروني متاح للاستخدام ✓');
+                        } else {
+                            emailStatus = false;
+                            setValidationState(emailInput, false, emailMsg, res.message || 'البريد الإلكتروني هذا مستخدم بالفعل من قبل حساب آخر.');
+                        }
+                    }, 350);
+
+                    return true;
                 }
 
                 if (passInput) {
@@ -586,6 +732,17 @@
                     });
                 }
 
+                if (emailInput) {
+                    emailInput.addEventListener('input', function () {
+                        validateEmail(false);
+                    });
+                    emailInput.addEventListener('blur', function () {
+                        if (emailInput.value.trim() !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim())) {
+                            setValidationState(emailInput, false, emailMsg, 'يرجى إدخال بريد إلكتروني صحيح.');
+                        }
+                    });
+                }
+
                 // Global input listener to hide top server alert on interaction with any field
                 form.querySelectorAll('input, select').forEach(function (el) {
                     el.addEventListener('input', function () {
@@ -595,7 +752,7 @@
 
                 // Reset invalid on input for standard required inputs
                 form.querySelectorAll('input[required], select[required]').forEach(function (input) {
-                    if (input === passInput || input === confirmInput || input === userInput) return;
+                    if (input === passInput || input === confirmInput || input === userInput || input === emailInput) return;
                     input.addEventListener('input', function () {
                         if (input.value.trim()) {
                             input.classList.remove('is-invalid');
@@ -608,10 +765,10 @@
                     });
                 });
 
-                form.addEventListener('submit', function (e) {
+                form.addEventListener('submit', async function (e) {
                     let generalValid = true;
                     form.querySelectorAll('input[required], select[required]').forEach(function (input) {
-                        if (input === passInput || input === confirmInput || input === userInput) return;
+                        if (input === passInput || input === confirmInput || input === userInput || input === emailInput) return;
                         if (!input.value.trim()) {
                             input.classList.add('is-invalid');
                             generalValid = false;
@@ -622,9 +779,42 @@
 
                     const passOk = validatePassword(true);
                     const confirmOk = validateConfirmation(true);
-                    const userOk = validateUsername(true);
+                    let userOk = validateUsername(true);
+                    let emailOk = validateEmail(true);
 
-                    if (!generalValid || !passOk || !confirmOk || !userOk) {
+                    // If username is pending or not yet resolved, await server check immediately
+                    if (userInput && userInput.value.trim() !== '' && (userStatus === 'checking' || userStatus === null)) {
+                        clearTimeout(userTimer);
+                        const res = await checkRemoteAvailability('username', userInput.value.trim(), userId);
+                        userStatus = res.available;
+                        if (!res.available) {
+                            userOk = false;
+                            setValidationState(userInput, false, userMsg, res.message || 'اسم المستخدم هذا مستخدم بالفعل من قبل حساب آخر.');
+                        } else {
+                            setValidationState(userInput, true, userMsg, res.message || 'اسم المستخدم متاح للاستخدام ✓');
+                        }
+                    } else if (userStatus === false) {
+                        userOk = false;
+                        setValidationState(userInput, false, userMsg, 'اسم المستخدم هذا مستخدم بالفعل من قبل حساب آخر.');
+                    }
+
+                    // If email is pending or not yet resolved, await server check immediately
+                    if (emailInput && emailInput.value.trim() !== '' && (emailStatus === 'checking' || emailStatus === null)) {
+                        clearTimeout(emailTimer);
+                        const res = await checkRemoteAvailability('email', emailInput.value.trim(), userId);
+                        emailStatus = res.available;
+                        if (!res.available) {
+                            emailOk = false;
+                            setValidationState(emailInput, false, emailMsg, res.message || 'البريد الإلكتروني هذا مستخدم بالفعل من قبل حساب آخر.');
+                        } else {
+                            setValidationState(emailInput, true, emailMsg, res.message || 'البريد الإلكتروني متاح للاستخدام ✓');
+                        }
+                    } else if (emailStatus === false) {
+                        emailOk = false;
+                        setValidationState(emailInput, false, emailMsg, 'البريد الإلكتروني هذا مستخدم بالفعل من قبل حساب آخر.');
+                    }
+
+                    if (!generalValid || !passOk || !confirmOk || !userOk || !emailOk) {
                         e.preventDefault();
                         e.stopPropagation();
 

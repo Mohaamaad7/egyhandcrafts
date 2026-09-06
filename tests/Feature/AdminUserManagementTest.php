@@ -227,4 +227,100 @@ class AdminUserManagementTest extends TestCase
         $response->assertSessionHas('success');
         $this->assertDatabaseMissing('users', ['id' => $targetUser->id]);
     }
+
+    public function test_check_availability_requires_authentication(): void
+    {
+        $this->postJson('/admin/check-availability', [
+            'field' => 'username',
+            'value' => 'someuser',
+        ])->assertStatus(401);
+    }
+
+    public function test_check_availability_detects_duplicate_and_available_username(): void
+    {
+        $admin = $this->superAdmin();
+        User::factory()->create(['username' => 'existing_user']);
+
+        // Duplicate username
+        $response = $this->actingAs($admin)->postJson('/admin/check-availability', [
+            'field' => 'username',
+            'value' => 'existing_user',
+        ]);
+        $response->assertOk()->assertJson([
+            'available' => false,
+        ]);
+
+        // Duplicate username ignored for current user
+        $user = User::where('username', 'existing_user')->first();
+        $response = $this->actingAs($admin)->postJson('/admin/check-availability', [
+            'field' => 'username',
+            'value' => 'existing_user',
+            'ignore_id' => $user->id,
+        ]);
+        $response->assertOk()->assertJson([
+            'available' => true,
+        ]);
+
+        // Invalid username format
+        $response = $this->actingAs($admin)->postJson('/admin/check-availability', [
+            'field' => 'username',
+            'value' => 'invalid username with spaces',
+        ]);
+        $response->assertOk()->assertJson([
+            'available' => false,
+        ]);
+
+        // Fresh available username
+        $response = $this->actingAs($admin)->postJson('/admin/check-availability', [
+            'field' => 'username',
+            'value' => 'fresh_unique_user',
+        ]);
+        $response->assertOk()->assertJson([
+            'available' => true,
+        ]);
+    }
+
+    public function test_check_availability_detects_duplicate_and_available_email(): void
+    {
+        $admin = $this->superAdmin();
+        User::factory()->create(['email' => 'duplicate@sadat.test']);
+
+        // Duplicate email
+        $response = $this->actingAs($admin)->postJson('/admin/check-availability', [
+            'field' => 'email',
+            'value' => 'duplicate@sadat.test',
+        ]);
+        $response->assertOk()->assertJson([
+            'available' => false,
+        ]);
+
+        // Duplicate email ignored for same user ID
+        $user = User::where('email', 'duplicate@sadat.test')->first();
+        $response = $this->actingAs($admin)->postJson('/admin/check-availability', [
+            'field' => 'email',
+            'value' => 'duplicate@sadat.test',
+            'ignore_id' => $user->id,
+        ]);
+        $response->assertOk()->assertJson([
+            'available' => true,
+        ]);
+
+        // Invalid email format
+        $response = $this->actingAs($admin)->postJson('/admin/check-availability', [
+            'field' => 'email',
+            'value' => 'not-an-email',
+        ]);
+        $response->assertOk()->assertJson([
+            'available' => false,
+        ]);
+
+        // Fresh available email
+        $response = $this->actingAs($admin)->postJson('/admin/check-availability', [
+            'field' => 'email',
+            'value' => 'brand_new_person@sadat.test',
+        ]);
+        $response->assertOk()->assertJson([
+            'available' => true,
+        ]);
+    }
 }

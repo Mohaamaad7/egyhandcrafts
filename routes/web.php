@@ -27,6 +27,11 @@ $adminPrefix = admin_path();
 Route::prefix($adminPrefix)->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard')->middleware('auth');
 
+    // ─── Admin: Real-Time Availability Check (Username & Email Uniqueness) ────
+    Route::post('/check-availability', [AdminUserController::class, 'checkAvailability'])
+        ->name('check-availability')
+        ->middleware('auth');
+
     // ─── Admin: Personal Profile, Credentials & Settings ─────────────────────
     Route::prefix('profile')->name('profile.')->middleware('auth')->group(function () {
         Route::get('/',         [AdminProfileController::class, 'edit'])->name('edit');

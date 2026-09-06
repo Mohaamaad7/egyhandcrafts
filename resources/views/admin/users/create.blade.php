@@ -35,7 +35,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.users.store') }}" method="POST" autocomplete="off" novalidate>
+                <form action="{{ route('admin.users.store') }}" method="POST" autocomplete="off" novalidate data-user-id="">
                     @csrf
 
                     <div class="row g-3 mb-3">
@@ -96,8 +96,9 @@
                                    value="{{ old('email') }}"
                                    placeholder="m.ahmed@sadat.edu.eg"
                                    required>
+                            <div id="email-live-msg" class="small mt-1" style="display: none;"></div>
                             @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback server-error d-block">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
