@@ -33,6 +33,15 @@ class SecurityHardeningTest extends TestCase
         $response->assertHeader('X-Content-Type-Options', 'nosniff');
         $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->assertHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
+        $response->assertHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+
+        $csp = $response->headers->get('Content-Security-Policy');
+        $this->assertNotNull($csp);
+        $this->assertStringContainsString("default-src 'self'", $csp);
+        $this->assertStringContainsString("https://cdn.jsdelivr.net", $csp);
+        $this->assertStringContainsString("https://unpkg.com", $csp);
+        $this->assertStringContainsString("https://fonts.googleapis.com", $csp);
+        $this->assertStringContainsString("https://www.youtube.com", $csp);
     }
 
     public function test_admin_and_login_responses_include_security_headers(): void
@@ -44,6 +53,8 @@ class SecurityHardeningTest extends TestCase
         $response->assertHeader('X-Content-Type-Options', 'nosniff');
         $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->assertHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
+        $response->assertHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        $response->assertHeader('Content-Security-Policy');
     }
 
     // ── 2. Inactive Workshop Profile Exposure Tests ────────────────
@@ -242,5 +253,59 @@ class SecurityHardeningTest extends TestCase
         $this->assertStringNotContainsString('onmouseover', $workshop->content);
         $this->assertStringNotContainsString('<script', $workshop->content);
         $this->assertStringContainsString('ورشة عريقة', $workshop->content);
+    }
+
+    // ── 6. Storage .htaccess Web Shell Protection Tests ───────────
+
+    public function test_storage_htaccess_blocks_executable_scripts(): void
+    {
+        $htaccessPath = storage_path('app/public/.htaccess');
+        $this->assertFileExists($htaccessPath);
+
+        $content = file_get_contents($htaccessPath);
+        $this->assertStringContainsString('FilesMatch', $content);
+        $this->assertStringContainsString('Require all denied', $content);
+        $this->assertStringContainsString('Options -Indexes -ExecCGI', $content);
+    }
+
+    // ── 7. Crawler Control (robots.txt) Tests ─────────────────────
+
+    public function test_robots_txt_disallows_admin_and_login(): void
+    {
+        $robotsPath = public_path('robots.txt');
+        $this->assertFileExists($robotsPath);
+
+        $content = file_get_contents($robotsPath);
+        $this->assertStringContainsString('Disallow: /admin', $content);
+        $this->assertStringContainsString('Disallow: /login', $content);
+    }
+
+    // ── 8. Seeder Production Guard Tests ──────────────────────────
+
+    public function test_admin_user_seeder_skips_in_production(): void
+    {
+        // Switch environment to production dynamically
+        $this->app->detectEnvironment(fn () => 'production');
+        $this->assertTrue(app()->isProduction());
+
+        // Count users before
+        $countBefore = User::count();
+
+        // Run seeder
+        $seeder = new \Database\Seeders\AdminUserSeeder();
+        $seeder->run();
+
+        // Ensure no new users seeded
+        $this->assertEquals($countBefore, User::count());
+    }
+
+    // ── 9. Legacy Files Elimination Tests ─────────────────────────
+
+    public function test_legacy_prototype_files_do_not_exist(): void
+    {
+        $this->assertFileDoesNotExist(base_path('index.php'));
+        $this->assertFileDoesNotExist(base_path('template.html'));
+        $this->assertFileDoesNotExist(base_path('Menofia_handicrafts_workshops_map.html'));
+        $this->assertDirectoryDoesNotExist(base_path('includes'));
     }
 }

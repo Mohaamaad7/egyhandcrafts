@@ -744,5 +744,54 @@
 
 **Status:** ✅ Success
 
+---
+
+### 2026-09-06 — Final Security Remediation & Attack Surface Reduction
+
+**Task/Instruction:** Implement final security remediations from secondary security audit:
+1. Web Shell Execution Block in Storage (`H-6`): Create `.htaccess` in `storage/app/public/`.
+2. Security Headers Upgrade - CSP & HSTS (`H-4`): Add `Strict-Transport-Security` and comprehensive `Content-Security-Policy`.
+3. Seeder Environment Hardening (`C-2`): Guard `AdminUserSeeder` from seeding default credentials in production.
+4. Crawler Control (`L-1`): Disallow `/admin` and `/login` in `public/robots.txt`.
+5. Eliminate Orphan Legacy Files (`M-6`): Remove old prototype files `index.php`, `includes/`, `template.html`, `Menofia_handicrafts_workshops_map.html`.
+6. Full automated verification and test suite execution.
+
+**Action Taken:**
+- **Web Shell Defense in Storage:**
+  - Created `storage/app/public/.htaccess` blocking execution of all PHP/CGI/script extensions (`<FilesMatch "\.(php|phtml|php3|php4|php5|php7|phar|cgi|pl|py|asp|aspx|sh)$"> Require all denied`) and disabled directory indexing and CGI (`Options -Indexes -ExecCGI`).
+- **Security Headers Upgrade (HSTS & CSP):**
+  - Updated `app/Http/Middleware/SecurityHeaders.php`:
+    - Added `Strict-Transport-Security: max-age=31536000; includeSubDomains`.
+    - Added comprehensive `Content-Security-Policy` covering all application assets, fonts, CDNs (jsDelivr, Cloudflare, unpkg, Tailwind, Google Fonts), tiles, and YouTube embeds without inline breakage.
+- **Seeder Production Guard:**
+  - Updated `database/seeders/AdminUserSeeder.php` with `if (app()->isProduction()) { return; }` to prevent default `password` seeding on live deployments.
+- **Robots.txt Crawler Control:**
+  - Updated `public/robots.txt` adding `Disallow: /admin` and `Disallow: /login`.
+- **Legacy Files Cleanup:**
+  - Removed obsolete static prototypes: `index.php`, `includes/` directory, `template.html`, and `Menofia_handicrafts_workshops_map.html`.
+- **Testing & Verification:**
+  - Updated `tests/Feature/SecurityHardeningTest.php` with assertions for HSTS, CSP, storage htaccess, robots.txt, production seeder guard, and legacy file removal (18 tests, 85 assertions).
+  - Executed full test suite: **108 passed (372 assertions), 100% success rate**.
+  - Executed `npm run build`: Vite compiled cleanly in 6.65s.
+
+**Files Created:**
+- `storage/app/public/.htaccess`
+
+**Files Removed:**
+- `index.php`
+- `includes/` (directory)
+- `template.html`
+- `Menofia_handicrafts_workshops_map.html`
+
+**Files Modified:**
+- `app/Http/Middleware/SecurityHeaders.php`
+- `database/seeders/AdminUserSeeder.php`
+- `public/robots.txt`
+- `tests/Feature/SecurityHardeningTest.php`
+- `docs/project_map.md`
+
+**Status:** ✅ Success
+
+
 
 

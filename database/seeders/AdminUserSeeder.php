@@ -15,6 +15,12 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Guard: Prevent seeding default development credentials in production
+        if (app()->isProduction()) {
+            $this->command?->warn('AdminUserSeeder: Default admin credentials cannot be seeded in production.');
+            return;
+        }
+
         User::updateOrCreate(
             ['email' => 'admin@sadat.test'],
             [
