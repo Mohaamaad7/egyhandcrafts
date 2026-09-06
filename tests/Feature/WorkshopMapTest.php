@@ -115,6 +115,15 @@ class WorkshopMapTest extends TestCase
         $response->assertStatus(404);
     }
 
+    public function test_inactive_workshop_returns_404_on_show(): void
+    {
+        $workshop = Workshop::first();
+        $workshop->update(['is_active' => false]);
+
+        $response = $this->get(route('workshops.show', $workshop->slug));
+        $response->assertStatus(404);
+    }
+
     // ── Admin Workshop Tests ──────────────────────────────────────
 
     public function test_admin_workshops_requires_authentication(): void

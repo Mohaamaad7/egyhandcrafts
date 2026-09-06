@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Craft;
 use App\Models\Workshop;
+use App\Services\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -52,6 +53,10 @@ class WorkshopController extends Controller
             'cover_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_active'         => 'nullable|boolean',
         ]);
+
+        if (! empty($validated['content'])) {
+            $validated['content'] = HtmlSanitizer::clean($validated['content']);
+        }
 
         // Generate unique slug
         $validated['slug'] = Str::slug($validated['name'], '-');
@@ -105,6 +110,10 @@ class WorkshopController extends Controller
             'cover_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_active'         => 'nullable|boolean',
         ]);
+
+        if (! empty($validated['content'])) {
+            $validated['content'] = HtmlSanitizer::clean($validated['content']);
+        }
 
         // Regenerate slug if name changed
         $validated['slug'] = Str::slug($validated['name'], '-');

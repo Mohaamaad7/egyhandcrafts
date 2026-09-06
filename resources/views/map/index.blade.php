@@ -261,8 +261,19 @@
     (function () {
         'use strict';
 
+        // ── HTML Escaping Utility for XSS Prevention ────────────
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         // ── Localized UI labels (future i18n ready) ──────────────
-        var labels = {!! $labelsJson !!};
+        var labels = @json($labels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
 
         // Apply labels to filter panel
         document.getElementById('labelCraft').textContent = labels.craft;
@@ -270,8 +281,8 @@
         document.getElementById('labelLocation').textContent = labels.location;
         document.getElementById('optAllLocations').textContent = labels.allLocations;
 
-        // ── Workshop data (from database via Blade) ──────────────
-        var workshops = {!! $workshopsJson !!};
+        // ── Workshop data (from database via secure Blade directive) ───────
+        var workshops = @json($workshops, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
 
         // ── Base URL for workshop profiles ───────────────────────
         var workshopBaseUrl = @json(url('/workshops'));
@@ -367,20 +378,20 @@
 
                 var popupContent =
                     '<div class="popup-container">' +
-                        '<h4><i class="fa-solid ' + iconConfig.icon + '"></i> ' + ws.name + '</h4>' +
-                        '<p><i class="fa-solid fa-briefcase"></i> <b>' + labels.craftLabel + '</b> ' + ws.craft_type + '</p>' +
-                        '<p><i class="fa-solid fa-map-location-dot"></i> <b>' + labels.locationLabel + '</b> ' + ws.location + '</p>' +
-                        '<p><i class="fa-solid fa-user-tie"></i> <b>' + labels.ownerLabel + '</b> ' + ws.owner + '</p>' +
-                        '<p><i class="fa-solid fa-users"></i> <b>' + labels.workersLabel + '</b> ' + ws.workers_count + '</p>' +
-                        '<p><i class="fa-solid fa-phone"></i> <b>' + labels.phoneLabel + '</b> <span class="phone-number">' + ws.phone + '</span></p>' +
-                        '<a href="' + workshopBaseUrl + '/' + ws.slug + '" class="popup-cta">' +
-                            '<i class="fa-solid fa-door-open"></i>' + labels.viewProfile +
+                        '<h4><i class="fa-solid ' + iconConfig.icon + '"></i> ' + escapeHtml(ws.name) + '</h4>' +
+                        '<p><i class="fa-solid fa-briefcase"></i> <b>' + escapeHtml(labels.craftLabel) + '</b> ' + escapeHtml(ws.craft_type) + '</p>' +
+                        '<p><i class="fa-solid fa-map-location-dot"></i> <b>' + escapeHtml(labels.locationLabel) + '</b> ' + escapeHtml(ws.location) + '</p>' +
+                        '<p><i class="fa-solid fa-user-tie"></i> <b>' + escapeHtml(labels.ownerLabel) + '</b> ' + escapeHtml(ws.owner) + '</p>' +
+                        '<p><i class="fa-solid fa-users"></i> <b>' + escapeHtml(labels.workersLabel) + '</b> ' + escapeHtml(ws.workers_count) + '</p>' +
+                        '<p><i class="fa-solid fa-phone"></i> <b>' + escapeHtml(labels.phoneLabel) + '</b> <span class="phone-number">' + escapeHtml(ws.phone) + '</span></p>' +
+                        '<a href="' + workshopBaseUrl + '/' + encodeURIComponent(ws.slug) + '" class="popup-cta">' +
+                            '<i class="fa-solid fa-door-open"></i>' + escapeHtml(labels.viewProfile) +
                         '</a>' +
                     '</div>';
 
                 L.marker([ws.latitude, ws.longitude], { icon: customIcon })
                     .bindPopup(popupContent)
-                    .bindTooltip(ws.location + ' - ' + ws.name, {
+                    .bindTooltip(escapeHtml(ws.location) + ' - ' + escapeHtml(ws.name), {
                         direction: 'top',
                         offset: [0, -15],
                         className: 'custom-tooltip'

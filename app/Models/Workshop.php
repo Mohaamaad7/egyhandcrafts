@@ -75,4 +75,12 @@ class Workshop extends Model
     {
         return $query->where('is_active', true);
     }
+
+    /**
+     * Mutator to sanitize rich HTML content before saving.
+     */
+    public function setContentAttribute($value): void
+    {
+        $this->attributes['content'] = $value !== null ? \App\Services\HtmlSanitizer::clean($value) : null;
+    }
 }

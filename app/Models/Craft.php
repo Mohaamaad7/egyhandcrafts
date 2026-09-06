@@ -51,4 +51,12 @@ class Craft extends Model
         // Elegant default fallback image
         return asset('assets/images/card_guide.jpg');
     }
+
+    /**
+     * Mutator to sanitize rich HTML content before saving.
+     */
+    public function setContentAttribute($value): void
+    {
+        $this->attributes['content'] = \App\Services\HtmlSanitizer::clean($value);
+    }
 }

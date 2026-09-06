@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Craft;
+use App\Services\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +41,7 @@ class CraftController extends Controller
             'cover_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        $validated['content'] = HtmlSanitizer::clean($validated['content']);
         $validated['slug'] = Str::slug($validated['title'], '-');
 
         // Ensure slug uniqueness
@@ -81,6 +83,7 @@ class CraftController extends Controller
             'cover_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        $validated['content'] = HtmlSanitizer::clean($validated['content']);
         $validated['slug'] = Str::slug($validated['title'], '-');
 
         // Ensure slug uniqueness (excluding self)

@@ -154,4 +154,12 @@ class CraftsmanStory extends Model
 
         return implode(' ', $words);
     }
+
+    /**
+     * Mutator to sanitize rich HTML content before saving.
+     */
+    public function setContentAttribute($value): void
+    {
+        $this->attributes['content'] = \App\Services\HtmlSanitizer::clean($value);
+    }
 }

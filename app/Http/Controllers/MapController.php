@@ -35,8 +35,10 @@ class MapController extends Controller
         ];
 
         return view('map.index', [
-            'workshopsJson' => $workshops->toJson(JSON_UNESCAPED_UNICODE),
-            'labelsJson'    => json_encode($labels, JSON_UNESCAPED_UNICODE),
+            'workshops'     => $workshops,
+            'labels'        => $labels,
+            'workshopsJson' => $workshops->toJson(JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE),
+            'labelsJson'    => json_encode($labels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE),
         ]);
     }
 
@@ -45,7 +47,7 @@ class MapController extends Controller
      */
     public function show(string $slug)
     {
-        $workshop = Workshop::where('slug', $slug)->firstOrFail();
+        $workshop = Workshop::active()->where('slug', $slug)->firstOrFail();
         $workshop->load('craft');
 
         // Related workshops from the same craft

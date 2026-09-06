@@ -684,4 +684,65 @@
 
 **Docs:** `docs/tasks/admin-panel-and-auth-overhaul.md`
 
+---
+
+### 2026-09-06 — Security Hardening & Vulnerability Mitigation
+
+**Task/Instruction:** Implement 4 surgical security fixes identified during static security audit:
+1. Map JSON injection (Stored XSS risk) prevention with secure Blade directive and popup string escaping.
+2. Inactive workshop profile exposure restriction via `Workshop::active()`.
+3. CKEditor HTML sanitization engine stripping dangerous vectors while preserving inline styles, colors, and tables.
+4. HTTP defensive security headers middleware (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`).
+5. Full automated verification and test coverage (100% pass rate).
+
+**Action Taken:**
+- **Map Security (Stored XSS Mitigation):**
+  - Updated `app/Http/Controllers/MapController.php@index` passing `$workshops` and `$labels` with safe hex escaping (`JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE`).
+  - Updated `resources/views/map/index.blade.php` adopting `@json($workshops, ...)` and `@json($labels, ...)`.
+  - Added JavaScript `escapeHtml()` helper in `map/index.blade.php` and strictly escaped all dynamic workshop fields (`ws.name`, `ws.craft_type`, `ws.location`, `ws.owner`, `ws.workers_count`, `ws.phone`, `encodeURIComponent(ws.slug)`) rendered in Leaflet popup HTML and tooltips.
+- **Workshop Profile Exposure Hardening:**
+  - Enforced active scope in `app/Http/Controllers/MapController.php@show`: `Workshop::active()->where('slug', $slug)->firstOrFail();`. Direct requests to inactive workshops now safely return HTTP 404.
+- **CKEditor HTML Sanitization Engine:**
+  - Created `app/Services/HtmlSanitizer.php` providing `clean(?string $html): string`:
+    - Strips dangerous execution containers (`<script>`, `<style>`, `<applet>`, `<object>`, `<embed>`, `<form>`, `<svg>`, `<math>`, `<base>`, `<meta>`, `<link>`).
+    - Filters `<iframe>` to strictly allow trusted YouTube / YouTube-nocookie embeds (`https://www.youtube.com/embed/...`, `https://www.youtube-nocookie.com/embed/...`).
+    - Strips all inline event handlers (`on*`, e.g. `onload`, `onclick`, `onerror`, `onmouseover`).
+    - Strips `javascript:`, `vbscript:`, and malicious `data:` URIs in link/media attributes.
+    - Neutralizes CSS expressions while **strictly preserving** all inline formatting styles (`style="color:...", style="background-color:..."`), table structures, alignments, borders, and Arabic UTF-8 text.
+  - Sanitized content in `store()` and `update()` methods across `CraftController`, `CraftsmanStoryController`, and `WorkshopController`.
+  - Added `setContentAttribute` mutators to `Craft`, `CraftsmanStory`, and `Workshop` models for defense-in-depth sanitization at the Eloquent level.
+- **HTTP Security Headers Middleware:**
+  - Created `app/Http/Middleware/SecurityHeaders.php` setting:
+    - `X-Frame-Options: SAMEORIGIN`
+    - `X-Content-Type-Options: nosniff`
+    - `Referrer-Policy: strict-origin-when-cross-origin`
+    - `Permissions-Policy: camera=(), microphone=(), geolocation=(self)`
+  - Appended middleware globally in `bootstrap/app.php`.
+- **Testing & Verification:**
+  - Added `test_inactive_workshop_returns_404_on_show()` in `tests/Feature/WorkshopMapTest.php`.
+  - Created `tests/Feature/SecurityHardeningTest.php` with 14 comprehensive tests covering security headers, 404 on inactive workshops, script breakout prevention in map JSON, popup escaping, XSS stripping, inline style preservation, YouTube iframe validation, and admin CRUD sanitization.
+  - Executed full test suite: **104 passed (348 assertions), 100% success rate**.
+  - Executed `npm run build`: Vite compiled cleanly in 7.61s.
+
+**Files Created:**
+- `app/Services/HtmlSanitizer.php`
+- `app/Http/Middleware/SecurityHeaders.php`
+- `tests/Feature/SecurityHardeningTest.php`
+
+**Files Modified:**
+- `app/Http/Controllers/MapController.php`
+- `resources/views/map/index.blade.php`
+- `app/Http/Controllers/Admin/CraftController.php`
+- `app/Http/Controllers/Admin/CraftsmanStoryController.php`
+- `app/Http/Controllers/Admin/WorkshopController.php`
+- `app/Models/Craft.php`
+- `app/Models/CraftsmanStory.php`
+- `app/Models/Workshop.php`
+- `bootstrap/app.php`
+- `tests/Feature/WorkshopMapTest.php`
+- `docs/project_map.md`
+
+**Status:** ✅ Success
+
+
 

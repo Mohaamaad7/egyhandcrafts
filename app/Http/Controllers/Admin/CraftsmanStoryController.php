@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CraftsmanStory;
+use App\Services\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -43,6 +44,8 @@ class CraftsmanStoryController extends Controller
             'audio_file'     => 'nullable|file|mimes:mp3,wav,m4a,aac,ogg|max:51200',
             'is_published'   => 'nullable|boolean',
         ]);
+
+        $validated['content'] = HtmlSanitizer::clean($validated['content']);
 
         // Generate unique slug
         $validated['slug'] = Str::slug($validated['title'], '-');
@@ -107,6 +110,8 @@ class CraftsmanStoryController extends Controller
             'delete_audio'   => 'nullable|boolean',
             'is_published'   => 'nullable|boolean',
         ]);
+
+        $validated['content'] = HtmlSanitizer::clean($validated['content']);
 
         // Generate unique slug (excluding self)
         $validated['slug'] = Str::slug($validated['title'], '-');
