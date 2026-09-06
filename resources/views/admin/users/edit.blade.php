@@ -40,7 +40,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.users.update', $user) }}" method="POST" autocomplete="off">
+                <form action="{{ route('admin.users.update', $user) }}" method="POST" autocomplete="off" novalidate>
                     @csrf
                     @method('PUT')
 
@@ -84,8 +84,9 @@
                                        value="{{ old('username', $user->username) }}"
                                        required>
                             </div>
+                            <div id="username-live-msg" class="small mt-1" style="display: none;"></div>
                             @error('username')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                <div class="invalid-feedback server-error d-block">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -127,23 +128,41 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label" for="password">كلمة المرور الجديدة</label>
-                                <input type="password"
-                                       name="password"
-                                       id="password"
-                                       class="form-control @error('password') is-invalid @enderror"
-                                       placeholder="اتركها فارغة لعدم التغيير">
+                                <div class="input-group input-group-flat">
+                                    <input type="password"
+                                           name="password"
+                                           id="password"
+                                           class="form-control @error('password') is-invalid @enderror"
+                                           placeholder="اتركها فارغة لعدم التغيير"
+                                           autocomplete="new-password">
+                                    <span class="input-group-text">
+                                        <a href="javascript:void(0)" class="link-secondary toggle-password-btn" data-target="password" title="إظهار / إخفاء كلمة المرور" tabindex="-1">
+                                            <i class="ti ti-eye fs-2"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                                <div id="password-live-msg" class="small mt-1" style="display: none;"></div>
                                 @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback server-error d-block">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label" for="password_confirmation">تأكيد كلمة المرور الجديدة</label>
-                                <input type="password"
-                                       name="password_confirmation"
-                                       id="password_confirmation"
-                                       class="form-control"
-                                       placeholder="أعد كتابة كلمة المرور الجديدة">
+                                <div class="input-group input-group-flat">
+                                    <input type="password"
+                                           name="password_confirmation"
+                                           id="password_confirmation"
+                                           class="form-control"
+                                           placeholder="أعد كتابة كلمة المرور الجديدة"
+                                           autocomplete="new-password">
+                                    <span class="input-group-text">
+                                        <a href="javascript:void(0)" class="link-secondary toggle-password-btn" data-target="password_confirmation" title="إظهار / إخفاء كلمة المرور" tabindex="-1">
+                                            <i class="ti ti-eye fs-2"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                                <div id="password-confirm-live-msg" class="small mt-1" style="display: none;"></div>
                             </div>
                         </div>
                     </div>

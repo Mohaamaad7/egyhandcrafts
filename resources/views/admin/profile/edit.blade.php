@@ -17,7 +17,7 @@
             </div>
 
             <div class="card-body p-4">
-                <form action="{{ route('admin.profile.update') }}" method="POST" autocomplete="off">
+                <form action="{{ route('admin.profile.update') }}" method="POST" autocomplete="off" novalidate>
                     @csrf
                     @method('PUT')
 
@@ -67,9 +67,10 @@
                                    value="{{ old('username', $user->username) }}"
                                    required>
                         </div>
+                        <div id="username-live-msg" class="small mt-1" style="display: none;"></div>
                         <small class="form-hint">يُستخدم لتسجيل الدخول كبديل عن البريد الإلكتروني.</small>
                         @error('username')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                            <div class="invalid-feedback server-error d-block">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -108,44 +109,70 @@
             </div>
 
             <div class="card-body p-4">
-                <form action="{{ route('admin.profile.password') }}" method="POST" autocomplete="off">
+                <form action="{{ route('admin.profile.password') }}" method="POST" autocomplete="off" novalidate>
                     @csrf
                     @method('PUT')
 
                     <div class="mb-3">
                         <label class="form-label required" for="current_password">كلمة المرور الحالية</label>
-                        <input type="password"
-                               name="current_password"
-                               id="current_password"
-                               class="form-control @error('current_password') is-invalid @enderror"
-                               placeholder="أدخل كلمة المرور الحالية للتأكيد"
-                               required>
+                        <div class="input-group input-group-flat">
+                            <input type="password"
+                                   name="current_password"
+                                   id="current_password"
+                                   class="form-control @error('current_password') is-invalid @enderror"
+                                   placeholder="أدخل كلمة المرور الحالية للتأكيد"
+                                   autocomplete="current-password"
+                                   required>
+                            <span class="input-group-text">
+                                <a href="javascript:void(0)" class="link-secondary toggle-password-btn" data-target="current_password" title="إظهار / إخفاء كلمة المرور" tabindex="-1">
+                                    <i class="ti ti-eye fs-2"></i>
+                                </a>
+                            </span>
+                        </div>
                         @error('current_password')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback server-error d-block">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label required" for="new_password">كلمة المرور الجديدة</label>
-                        <input type="password"
-                               name="password"
-                               id="new_password"
-                               class="form-control @error('password') is-invalid @enderror"
-                               placeholder="8 أحرف على الأقل"
-                               required>
+                        <div class="input-group input-group-flat">
+                            <input type="password"
+                                   name="password"
+                                   id="new_password"
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   placeholder="8 أحرف على الأقل"
+                                   autocomplete="new-password"
+                                   required>
+                            <span class="input-group-text">
+                                <a href="javascript:void(0)" class="link-secondary toggle-password-btn" data-target="new_password" title="إظهار / إخفاء كلمة المرور" tabindex="-1">
+                                    <i class="ti ti-eye fs-2"></i>
+                                </a>
+                            </span>
+                        </div>
+                        <div id="new-password-live-msg" class="small mt-1" style="display: none;"></div>
                         @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback server-error d-block">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label required" for="new_password_confirmation">تأكيد كلمة المرور الجديدة</label>
-                        <input type="password"
-                               name="password_confirmation"
-                               id="new_password_confirmation"
-                               class="form-control"
-                               placeholder="أعد إدخال كلمة المرور الجديدة"
-                               required>
+                        <div class="input-group input-group-flat">
+                            <input type="password"
+                                   name="password_confirmation"
+                                   id="new_password_confirmation"
+                                   class="form-control"
+                                   placeholder="أعد إدخال كلمة المرور الجديدة"
+                                   autocomplete="new-password"
+                                   required>
+                            <span class="input-group-text">
+                                <a href="javascript:void(0)" class="link-secondary toggle-password-btn" data-target="new_password_confirmation" title="إظهار / إخفاء كلمة المرور" tabindex="-1">
+                                    <i class="ti ti-eye fs-2"></i>
+                                </a>
+                            </span>
+                        </div>
+                        <div id="new-password-confirm-live-msg" class="small mt-1" style="display: none;"></div>
                     </div>
 
                     <div class="d-flex justify-content-end pt-3 border-top">

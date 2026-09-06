@@ -154,6 +154,30 @@
             right: auto !important;
             left: 0 !important;
         }
+
+        /* Input groups live validation borders */
+        .input-group-flat.is-invalid {
+            border: 1px solid var(--tblr-danger, #d63939) !important;
+            border-radius: var(--tblr-border-radius, 4px);
+        }
+        .input-group-flat.is-invalid > .form-control {
+            border-color: transparent !important;
+            background-image: none !important;
+        }
+        .input-group-flat.is-invalid > .input-group-text {
+            border-color: transparent !important;
+        }
+        .input-group-flat.is-valid {
+            border: 1px solid var(--tblr-success, #2fb344) !important;
+            border-radius: var(--tblr-border-radius, 4px);
+        }
+        .input-group-flat.is-valid > .form-control {
+            border-color: transparent !important;
+            background-image: none !important;
+        }
+        .input-group-flat.is-valid > .input-group-text {
+            border-color: transparent !important;
+        }
     </style>
 
     @stack('styles')
@@ -356,6 +380,263 @@
 
     {{-- Tabler Core JS --}}
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js" defer></script>
+
+    {{-- Instant Live Validation & Password Visibility Toggle Script --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. Password Visibility Toggle
+            document.querySelectorAll('.toggle-password-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    if (!input) return;
+
+                    const icon = this.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        if (icon) {
+                            icon.classList.remove('ti-eye');
+                            icon.classList.add('ti-eye-off');
+                        }
+                    } else {
+                        input.type = 'password';
+                        if (icon) {
+                            icon.classList.remove('ti-eye-off');
+                            icon.classList.add('ti-eye');
+                        }
+                    }
+                });
+            });
+
+            // 2. Helper functions for live messages & states
+            function showError(container, text) {
+                if (!container) return;
+                container.innerHTML = '<span class="text-danger d-inline-flex align-items-center gap-1"><i class="ti ti-alert-circle"></i> <span>' + text + '</span></span>';
+                container.style.display = 'block';
+            }
+
+            function showSuccess(container, text) {
+                if (!container) return;
+                container.innerHTML = '<span class="text-success d-inline-flex align-items-center gap-1"><i class="ti ti-circle-check"></i> <span>' + text + '</span></span>';
+                container.style.display = 'block';
+            }
+
+            function clearMsg(container) {
+                if (!container) return;
+                container.innerHTML = '';
+                container.style.display = 'none';
+            }
+
+            function setValidationState(input, isValid, messageContainer, messageText) {
+                if (!input) return;
+                const group = input.closest('.input-group-flat, .input-group');
+                if (isValid === true) {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                    if (group) {
+                        group.classList.remove('is-invalid');
+                        group.classList.add('is-valid');
+                    }
+                    if (messageText) {
+                        showSuccess(messageContainer, messageText);
+                    } else {
+                        clearMsg(messageContainer);
+                    }
+                } else if (isValid === false) {
+                    input.classList.add('is-invalid');
+                    input.classList.remove('is-valid');
+                    if (group) {
+                        group.classList.add('is-invalid');
+                        group.classList.remove('is-valid');
+                    }
+                    showError(messageContainer, messageText);
+                } else {
+                    input.classList.remove('is-invalid', 'is-valid');
+                    if (group) {
+                        group.classList.remove('is-invalid', 'is-valid');
+                    }
+                    clearMsg(messageContainer);
+                }
+            }
+
+            // 3. Bind all forms with credentials / password fields
+            document.querySelectorAll('form').forEach(function (form) {
+                const passInput = form.querySelector('#password, #new_password');
+                const confirmInput = form.querySelector('#password_confirmation, #new_password_confirmation');
+                const userInput = form.querySelector('#username');
+
+                const passMsg = form.querySelector('#password-live-msg, #new-password-live-msg');
+                const confirmMsg = form.querySelector('#password-confirm-live-msg, #new-password-confirm-live-msg');
+                const userMsg = form.querySelector('#username-live-msg');
+
+                function hideServerErrors(input) {
+                    if (!input) return;
+                    const parent = input.closest('.col-md-6, .mb-3, .col-md-12') || input.parentElement;
+                    if (parent) {
+                        parent.querySelectorAll('.server-error').forEach(function (el) {
+                            el.style.display = 'none';
+                        });
+                    }
+                    // Dismiss top server alert summary if active
+                    const cardBody = form.closest('.card-body');
+                    const topAlert = cardBody ? cardBody.querySelector('.alert-danger') : form.querySelector('.alert-danger');
+                    if (topAlert) {
+                        topAlert.style.display = 'none';
+                    }
+                }
+
+                function validatePassword(isSubmit) {
+                    if (!passInput) return true;
+                    hideServerErrors(passInput);
+                    const val = passInput.value;
+                    const isRequired = passInput.hasAttribute('required');
+
+                    if (val === '') {
+                        if (isSubmit && isRequired) {
+                            setValidationState(passInput, false, passMsg, 'يجب ألا تقل كلمة المرور عن 8 أحرف.');
+                            return false;
+                        }
+                        setValidationState(passInput, null, passMsg, '');
+                        return !isRequired;
+                    }
+
+                    if (val.length < 8) {
+                        setValidationState(passInput, false, passMsg, 'يجب ألا تقل كلمة المرور عن 8 أحرف.');
+                        return false;
+                    } else {
+                        setValidationState(passInput, true, passMsg, 'كلمة المرور مستوفية للشروط (8 أحرف أو أكثر) ✓');
+                        return true;
+                    }
+                }
+
+                function validateConfirmation(isSubmit) {
+                    if (!confirmInput) return true;
+                    hideServerErrors(confirmInput);
+                    const passVal = passInput ? passInput.value : '';
+                    const confirmVal = confirmInput.value;
+                    const isRequired = confirmInput.hasAttribute('required');
+
+                    if (confirmVal === '') {
+                        if (isSubmit && (isRequired || passVal !== '')) {
+                            setValidationState(confirmInput, false, confirmMsg, 'تأكيد كلمة المرور غير متطابق.');
+                            return false;
+                        }
+                        setValidationState(confirmInput, null, confirmMsg, '');
+                        return passVal === '' && !isRequired;
+                    }
+
+                    if (confirmVal !== passVal) {
+                        setValidationState(confirmInput, false, confirmMsg, 'تأكيد كلمة المرور غير متطابق.');
+                        return false;
+                    } else {
+                        if (passVal.length >= 8 || (!isRequired && passVal === '')) {
+                            setValidationState(confirmInput, true, confirmMsg, 'تأكيد كلمة المرور متطابق تماماً ✓');
+                            return true;
+                        } else {
+                            setValidationState(confirmInput, null, confirmMsg, '');
+                            return false;
+                        }
+                    }
+                }
+
+                function validateUsername(isSubmit) {
+                    if (!userInput) return true;
+                    hideServerErrors(userInput);
+                    const val = userInput.value.trim();
+                    const isRequired = userInput.hasAttribute('required');
+
+                    if (val === '') {
+                        if (isSubmit && isRequired) {
+                            setValidationState(userInput, false, userMsg, 'اسم المستخدم مطلوب.');
+                            return false;
+                        }
+                        setValidationState(userInput, null, userMsg, '');
+                        return !isRequired;
+                    }
+
+                    const alphaDashRegex = /^[a-zA-Z0-9_-]+$/;
+                    if (!alphaDashRegex.test(val)) {
+                        setValidationState(userInput, false, userMsg, 'اسم المستخدم يجب أن يتكون من أحرف إنجليزية وأرقام وشرطة (_) فقط دون مسافات.');
+                        return false;
+                    } else {
+                        setValidationState(userInput, true, userMsg, '');
+                        return true;
+                    }
+                }
+
+                if (passInput) {
+                    passInput.addEventListener('input', function () {
+                        validatePassword(false);
+                        if (confirmInput && confirmInput.value !== '') {
+                            validateConfirmation(false);
+                        }
+                    });
+                }
+
+                if (confirmInput) {
+                    confirmInput.addEventListener('input', function () {
+                        validateConfirmation(false);
+                    });
+                }
+
+                if (userInput) {
+                    userInput.addEventListener('input', function () {
+                        validateUsername(false);
+                    });
+                }
+
+                // Global input listener to hide top server alert on interaction with any field
+                form.querySelectorAll('input, select').forEach(function (el) {
+                    el.addEventListener('input', function () {
+                        hideServerErrors(el);
+                    });
+                });
+
+                // Reset invalid on input for standard required inputs
+                form.querySelectorAll('input[required], select[required]').forEach(function (input) {
+                    if (input === passInput || input === confirmInput || input === userInput) return;
+                    input.addEventListener('input', function () {
+                        if (input.value.trim()) {
+                            input.classList.remove('is-invalid');
+                        }
+                    });
+                    input.addEventListener('change', function () {
+                        if (input.value.trim()) {
+                            input.classList.remove('is-invalid');
+                        }
+                    });
+                });
+
+                form.addEventListener('submit', function (e) {
+                    let generalValid = true;
+                    form.querySelectorAll('input[required], select[required]').forEach(function (input) {
+                        if (input === passInput || input === confirmInput || input === userInput) return;
+                        if (!input.value.trim()) {
+                            input.classList.add('is-invalid');
+                            generalValid = false;
+                        } else {
+                            input.classList.remove('is-invalid');
+                        }
+                    });
+
+                    const passOk = validatePassword(true);
+                    const confirmOk = validateConfirmation(true);
+                    const userOk = validateUsername(true);
+
+                    if (!generalValid || !passOk || !confirmOk || !userOk) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const firstInvalid = form.querySelector('.is-invalid');
+                        if (firstInvalid) {
+                            firstInvalid.focus();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

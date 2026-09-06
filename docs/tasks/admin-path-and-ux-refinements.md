@@ -191,3 +191,20 @@ vite v7.3.6 building client environment for production...
 ✓ 898 modules transformed.
 ✓ built in 7.03s
 ```
+
+---
+
+## 6. Real-Time Client-Side Input Validation (Live Feedback)
+
+### Problem & UX Need
+Users previously had to submit user creation and password edit forms before receiving feedback on:
+1. Minimum password length requirement (at least 8 characters).
+2. Password confirmation mismatch.
+3. Username character restrictions (letters, numbers, underscores).
+
+### Implementation
+- **Instantaneous Feedback (`input` event):** Added real-time evaluation hooks in `resources/views/admin/layout.blade.php` that trigger immediately as the administrator types.
+- **Visual Styling:** Integrates seamlessly with Tabler's `is-invalid` (red border, alert badge) and `is-valid` (green border, confirmation badge). In `.input-group-flat`, borders and eye toggle controls remain unified.
+- **Dynamic Error Suppression:** Stale server-side error banners (`.alert-danger`) and static error texts are dismissed immediately once the user starts making corrections.
+- **Client-Side Submit Interceptor:** Forms configured with `novalidate` intercept submission when any required field or credentials check fails, highlighting and focusing the offending element without unnecessary server roundtrips.
+
